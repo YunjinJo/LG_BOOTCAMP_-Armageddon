@@ -51,7 +51,7 @@ extern void save_context();
 extern void restore_context();
 
 extern unsigned int set_ttbr_app_0();
-extern void set_ttbr_app_1();
+extern unsigned int set_ttbr_app_1();
 
 //timer
 extern void Timer0_Delay(int mtime);

@@ -92,12 +92,25 @@ set_ttbr_app_0:
 
 	.global set_ttbr_app_1
 set_ttbr_app_1:
+    mrc p15, 0, r0, c1, c0, 0   // Control Register 읽기
+    bic r0, r0, #1              // MMU 비활성화 (비트 0 클리어)
+    mcr p15, 0, r0, c1, c0, 0   // Control Register 쓰기
 
-	ldr r0, =0x44060000 @ app 0 address
-	mcr p15, 0, r0, c2, c0, 0 @ TTBR0 setting
+	mrc p15, 0, r0, c2, c0, 0
+	ldr r1, =0x44060000
+	orr r0, r0, r1
+	mcr p15, 0, r0, c2, c0, 0
 
 	mov r0, #0
-	mcr p15, 0, r0, c8, c7, 0 // Flush TLB
+	mcr p15, 0, r0, C8, C7, 2
+	mrc p15, 0, r0, c2, c0, 0
+
+    // MMU 재활성화
+    mrc p15, 0, r0, c1, c0, 0   // Control Register 읽기
+    orr r0, r0, #1              // MMU 활성화 (비트 0 설정)
+    mcr p15, 0, r0, c1, c0, 0   // Control Register 쓰기
+
+    mrc p15, 0, r0, c2, c0, 0
 
 	bx lr
 

@@ -111,7 +111,7 @@ void Key3_ISR(void)
 	GIC_Clear_Pending_Clear(0,51);
 	GIC_Write_EOI(0, 51);
 	//save_context();
-	CoSetASID(1);
+	//CoSetASID(1);
 }
 
 void Key4_ISR(void)
@@ -123,7 +123,7 @@ void Key4_ISR(void)
 	GIC_Clear_Pending_Clear(0,52);
 	GIC_Write_EOI(0, 52);
 	//restore_context();
-	CoSetASID(2);
+	//CoSetASID(2);
 }
 
 void Timer0_ISR(void)

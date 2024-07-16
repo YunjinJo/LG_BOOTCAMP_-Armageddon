@@ -19,6 +19,18 @@ Run_App:
 	msr		cpsr_cxsf, r4
 	pop		{r4, pc}
 
+	.global switch_app
+switch_app:
+	cps		#0x1f
+	mov sp, r1
+	blx		r0
+
+	.global get_ASID
+get_ASID:
+	mrc p15, 0, r0, c13, c0, 1
+	bx lr
+
+
 	.global Get_User_SP
 Get_User_SP:
 

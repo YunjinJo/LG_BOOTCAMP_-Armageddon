@@ -102,6 +102,18 @@ void Uart1_ISR(void)
 	Uart1_Printf("Uart1 => %c\n", rURXH1);
 }
 
+#define 	SIZE_APP0			(4*1024*1024)
+#define 	SIZE_APP1			(4*1024*1024)
+
+#define 	RAM_APP0			0x44100000
+#define 	RAM_APP1			(RAM_APP0+SIZE_APP0)
+#define 	SIZE_STACK0			(1*1024*1024)
+#define 	SIZE_STACK1			(1*1024*1024)
+#define 	STACK_LIMIT_APP0	(RAM_APP1+SIZE_APP1)
+#define 	STACK_LIMIT_APP1	(STACK_LIMIT_APP0+SIZE_STACK0)
+#define 	STACK_BASE_APP0		(STACK_LIMIT_APP0+SIZE_STACK0)
+#define 	STACK_BASE_APP1		(STACK_LIMIT_APP1+SIZE_STACK1)
+
 void Key3_ISR(void)
 {
 	rEXT_INT40_PEND = 0x1<<3;
@@ -111,7 +123,9 @@ void Key3_ISR(void)
 	GIC_Clear_Pending_Clear(0,51);
 	GIC_Write_EOI(0, 51);
 	//save_context();
-	//CoSetASID(1);
+	CoSetASID(1);
+	set_ttbr_app_0();
+	cur_context_addr = STACK_BASE_APP0;
 }
 
 void Key4_ISR(void)
@@ -123,7 +137,9 @@ void Key4_ISR(void)
 	GIC_Clear_Pending_Clear(0,52);
 	GIC_Write_EOI(0, 52);
 	//restore_context();
-	//CoSetASID(2);
+	CoSetASID(2);
+	set_ttbr_app_1();
+	cur_context_addr = STACK_BASE_APP1;
 }
 
 void Timer0_ISR(void)

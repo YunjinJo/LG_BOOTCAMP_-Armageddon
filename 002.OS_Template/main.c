@@ -31,6 +31,7 @@ extern WIN_INFO_ST ArrWinInfo[5];
 #define TT_APP_0 MMU_PAGE_TABLE_BASE + 0x50000
 #define TT_APP_1 MMU_PAGE_TABLE_BASE + 0x60000
 
+unsigned int cur_context_addr = STACK_BASE_APP0;
 
 typedef struct {
 	unsigned int uVaStart;
@@ -40,9 +41,9 @@ typedef struct {
 }TT_info;
 
 TT_info info_app_0 = {RAM_APP0, (RAM_APP0+SIZE_APP0-1), RAM_APP0, (RW_WBWA | (1 << 17))};
-TT_info info_stack_app_0 = {STACK_LIMIT_APP0, STACK_BASE_APP0-1, STACK_LIMIT_APP0, RW_WBWA};
+TT_info info_stack_app_0 = {STACK_LIMIT_APP0, STACK_BASE_APP0-1, STACK_LIMIT_APP0, (RW_WBWA | (1 << 17))};
 TT_info info_app_1 = {RAM_APP0, (RAM_APP0+SIZE_APP1-1), RAM_APP1, (RW_WBWA | (1 << 17))};
-TT_info info_stack_app_1 = {STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, RW_WBWA};
+TT_info info_stack_app_1 = {STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, (RW_WBWA | (1 << 17))};
 
 void init_transtable(unsigned int tt_app_addr, TT_info info)
 {
@@ -170,19 +171,9 @@ void Main(void)
 
 	for(;;)
 	{
-		unsigned char x;
-
-		Uart_Printf("\nAPP [1]APP0, [2]APP1 >> ");
-		x = Uart1_Get_Char();
-
-		if(x == '1')
-		{
-			start_app_0();
-		}
-
-		if(x == '2')
-		{
-			start_app_1();
+		Uart_Printf("\n get_ASID : %d \n", get_ASID());
+		if (get_ASID() == 1 || get_ASID() == 2) {
+			switch_app(RAM_APP0, cur_context_addr);
 		}
 	}
 }

@@ -53,6 +53,11 @@ extern void restore_context();
 extern unsigned int set_ttbr_app_0();
 extern unsigned int set_ttbr_app_1();
 
+extern void switch_app(unsigned int addr, unsigned int stack);
+extern unsigned int cur_context_addr;
+extern unsigned int get_ASID(void);
+
+
 //timer
 extern void Timer0_Delay(int mtime);
 extern void Timer0_Int_Delay(int en, int mtime);

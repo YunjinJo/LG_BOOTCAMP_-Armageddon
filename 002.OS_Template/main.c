@@ -80,28 +80,28 @@ void App_Read(unsigned int sector, unsigned int size, unsigned int addr)
 void start_app_0()
 {
 	Uart_Printf("\nAPP0 RUN\n", 0);
-	Uart_Printf("\n==========\n");
-
-	init_transtable(TT_APP_0, info_app_0);
-	init_transtable(TT_APP_0, info_stack_app_0);
-
-	Uart_Printf("\n==========\n");
+//	Uart_Printf("\n==========\n");
+//
+//	init_transtable(TT_APP_0, info_app_0);
+//	init_transtable(TT_APP_0, info_stack_app_0);
+//
+//	Uart_Printf("\n==========\n");
 	CoSetASID(1);
 
 	Uart_Printf("\n TTBR0 : %X", set_ttbr_app_0());
 
-	//Run_App(RAM_APP0, STACK_BASE_APP0);
+	Run_App(RAM_APP0, STACK_BASE_APP0);
 }
 
 void start_app_1()
 {
 	Uart_Printf("\nAPP1 RUN\n", 1);
-	Uart_Printf("\n==========\n");
-
-	init_transtable(TT_APP_1, info_app_1);
-	init_transtable(TT_APP_1, info_stack_app_1);
-
-	Uart_Printf("\n==========\n");
+//	Uart_Printf("\n==========\n");
+//
+//	init_transtable(TT_APP_1, info_app_1);
+//	init_transtable(TT_APP_1, info_stack_app_1);
+//
+//	Uart_Printf("\n==========\n");
 	CoSetASID(2);
 	Uart_Printf("\n TTBR0 : %X", set_ttbr_app_1());
 	Run_App(RAM_APP0, STACK_BASE_APP1);
@@ -138,19 +138,19 @@ void Main(void)
 	GIC_Set_Priority_Mask(0,0xFF);
 	GIC_Distributor_Enable(1);
 
-//	Uart_Printf("\n==========\n");
-//
-//	init_transtable(TT_APP_0, info_app_0);
-//	init_transtable(TT_APP_0, info_stack_app_0);
-//
-//	Uart_Printf("\n==========\n");
-//
-//	Uart_Printf("\n==========\n");
-//
-//	init_transtable(TT_APP_1, info_app_1);
-//	init_transtable(TT_APP_1, info_stack_app_1);
-//
-//	Uart_Printf("\n==========\n");
+	Uart_Printf("\n==========\n");
+
+	init_transtable(TT_APP_0, info_app_0);
+	init_transtable(TT_APP_0, info_stack_app_0);
+
+	Uart_Printf("\n==========\n");
+
+	Uart_Printf("\n==========\n");
+
+	init_transtable(TT_APP_1, info_app_1);
+	init_transtable(TT_APP_1, info_stack_app_1);
+
+	Uart_Printf("\n==========\n");
 
 #if 0 // SD Loading
 	{

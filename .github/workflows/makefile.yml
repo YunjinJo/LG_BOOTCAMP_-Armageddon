@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@main
 
     - name: configure
-      run: ./configure
+      run: cd "002.OS_Template"
 
     - name: Install dependencies
       run: make

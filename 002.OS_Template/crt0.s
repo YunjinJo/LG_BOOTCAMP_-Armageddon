@@ -27,16 +27,16 @@ __start:
 	.extern ISR_Vector
 
 HandlerIRQ:
-	sub		sp,sp,#4
-	push	{r0, lr}
-	ldr		lr, =ICCIAR_CPU0
-	ldr		r0, [lr]
-	ldr		lr, =0x3FF
-	and		r0, r0, lr
-	ldr		lr, =ISR_Vector
-	ldr		r0, [lr, r0, lsl #2]
-	str		r0, [sp, #8]
-	pop		{r0, lr, pc}
+	push 	{r0-r3, r12, lr}
+    ldr 	r1, =ISR_Vector
+    ldr 	r2, =ICCIAR_CPU0
+    ldr 	r0, [r2]
+    ldr 	r2, =0x3ff
+    and 	r0, r0, r2
+    ldr 	r0, [r1, r0, lsl #2]
+    blx 	r0
+    pop 	{r0-r3, r12, lr}
+    subs 	pc, lr, #4
 
 @--------------------------------------------------
 @ Exception Handler

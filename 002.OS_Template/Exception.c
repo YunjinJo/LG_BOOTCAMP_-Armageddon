@@ -111,7 +111,15 @@ void Key3_ISR(void)
 	GIC_Clear_Pending_Clear(0,51);
 	GIC_Write_EOI(0, 51);
 	//save_context();
+
+	Uart1_Printf("Key3 debug0\n");
+//	set_ttbr_app_0();
+	CoSetTTBase(0x44000000);
+	Uart1_Printf("Key3 debug1\n");
+	Uart1_Printf("Key3 debug1 - ASID: %d\n", CoGetASID());
 	CoSetASID(1);
+	Uart1_Printf("Key3 debug2\n");
+	Uart1_Printf("Key3 debug2 - ASID: %d\n", CoGetASID());
 }
 
 void Key4_ISR(void)
@@ -123,7 +131,15 @@ void Key4_ISR(void)
 	GIC_Clear_Pending_Clear(0,52);
 	GIC_Write_EOI(0, 52);
 	//restore_context();
+
+	Uart1_Printf("Key4 debug0\n");
+//	set_ttbr_app_1();
+	CoSetTTBase(0x44004000);
+	Uart1_Printf("Key4 debug1\n");
+	Uart1_Printf("Key4 debug1 - ASID: %d\n", CoGetASID());
 	CoSetASID(2);
+	Uart1_Printf("Key4 debug2\n");
+	Uart1_Printf("Key4 debug2 - ASID: %d\n", CoGetASID());
 }
 
 void Timer0_ISR(void)

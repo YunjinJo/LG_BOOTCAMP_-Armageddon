@@ -167,6 +167,7 @@ void CoDisableMmu(void);
 void CoSetTTBase(unsigned int base);
 void CoSelTTBReg0(void);
 void CoSetASID(unsigned int ASID);
+unsigned int CoGetASID(void);
 void CoSetDomain(unsigned int domain);
 void CoInvalidateITlb(void);
 void CoInvalidateITlbVA(unsigned int va);

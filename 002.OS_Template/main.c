@@ -28,8 +28,8 @@ extern WIN_INFO_ST ArrWinInfo[5];
 #define SECTOR_SIZE 		512
 #define ALIGN_SECTOR(x)	 	((((x+(SECTOR_SIZE-1))&~(SECTOR_SIZE-1))/SECTOR_SIZE))
 
-#define TT_APP_0 MMU_PAGE_TABLE_BASE + 0x50000
-#define TT_APP_1 MMU_PAGE_TABLE_BASE + 0x60000
+#define TT_APP_0 (MMU_PAGE_TABLE_BASE)
+#define TT_APP_1 (MMU_PAGE_TABLE_BASE + (16 * 1024))
 
 
 typedef struct {
@@ -87,8 +87,10 @@ void start_app_0()
 //
 //	Uart_Printf("\n==========\n");
 	CoSetASID(1);
+	Uart_Printf("ASID: %d\n", CoGetASID());
 
 	Uart_Printf("\n TTBR0 : %X", set_ttbr_app_0());
+	Uart_Printf("ASID: %d\n", CoGetASID());
 
 	Run_App(RAM_APP0, STACK_BASE_APP0);
 }
@@ -103,7 +105,10 @@ void start_app_1()
 //
 //	Uart_Printf("\n==========\n");
 	CoSetASID(2);
+	Uart_Printf("ASID: %d\n", CoGetASID());
 	set_ttbr_app_1();
+	Uart_Printf("ASID: %d\n", CoGetASID());
+
 	Run_App(RAM_APP0, STACK_BASE_APP1);
 }
 

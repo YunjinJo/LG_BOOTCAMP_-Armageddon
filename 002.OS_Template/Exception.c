@@ -48,12 +48,95 @@ void SVC_Handler(unsigned int addr, unsigned int mode)
 	Uart_Printf("SVC-ID[%u]\n", Macro_Extract_Area(*(unsigned int *)addr, 0xffffff, 0));
 }
 
-void Invalid_ISR(void)	__attribute__ ((interrupt ("IRQ")));
-void Uart1_ISR(void)	__attribute__ ((interrupt ("IRQ")));
-void Timer0_ISR(void) 	__attribute__ ((interrupt ("IRQ")));
-void Key3_ISR(void)		__attribute__ ((interrupt ("IRQ")));
-void Key4_ISR(void)		__attribute__ ((interrupt ("IRQ")));
-void SDHC_ISR(void) 	__attribute__ ((interrupt ("IRQ")));
+//void Invalid_ISR(void)	__attribute__ ((interrupt ("IRQ")));
+//void Uart1_ISR(void)	__attribute__ ((interrupt ("IRQ")));
+//void Timer0_ISR(void) 	__attribute__ ((interrupt ("IRQ")));
+//void Key3_ISR(void)		__attribute__ ((interrupt ("IRQ")));
+//void Key4_ISR(void)		__attribute__ ((interrupt ("IRQ")));
+//void SDHC_ISR(void) 	__attribute__ ((interrupt ("IRQ")));
+
+
+
+void Invalid_ISR(void)
+{
+	Uart1_Printf("Invalid_ISR\n");
+}
+
+volatile unsigned int sd_insert_flag = 0;
+volatile unsigned int sd_command_complete_flag = 0;
+volatile unsigned int sd_rd_buffer_flag = 0;
+volatile unsigned int sd_wr_buffer_flag = 0;
+volatile unsigned int sd_tr_flag = 0;
+
+void SDHC_ISR(void)
+{
+	volatile unsigned int tmp;
+
+	tmp = rNORINTSTS2;
+	rNORINTSTS2 = tmp;
+
+	if((tmp & (1 << 6)) || (tmp & (1 << 7)))
+	{
+		if (Macro_Check_Bit_Set(rPRNSTS2,16)) sd_insert_flag = 1;
+		else sd_insert_flag = 0;
+	}
+
+
+	if(tmp & (1 << 5)) sd_rd_buffer_flag = 1;
+	if(tmp & (1 << 4)) sd_wr_buffer_flag = 1;
+	if(tmp & (1 << 1)) sd_tr_flag = 1;
+	if(tmp & 1) sd_command_complete_flag = 1;
+
+	GIC_Clear_Pending_Clear(0,107);
+	GIC_Write_EOI(0, 107);
+}
+
+void Uart1_ISR(void)
+{
+	rUINTSP1 = 0xf;
+	rUINTP1 = 0xf;
+
+	GIC_Clear_Pending_Clear(0,85);
+	GIC_Write_EOI(0, 85);
+
+	Uart1_Printf("Uart1 => %c\n", rURXH1);
+}
+
+void Key3_ISR(void)
+{
+	rEXT_INT40_PEND = 0x1<<3;
+
+	Uart1_Printf("Key3 Pressed\n");
+
+	GIC_Clear_Pending_Clear(0,51);
+	GIC_Write_EOI(0, 51);
+	//save_context();
+	CoSetASID(1);
+}
+
+void Key4_ISR(void)
+{
+	rEXT_INT40_PEND = 0x1<<4;
+
+	Uart1_Printf("Key4 Pressed\n");
+
+	GIC_Clear_Pending_Clear(0,52);
+	GIC_Write_EOI(0, 52);
+	//restore_context();
+	CoSetASID(2);
+}
+
+void Timer0_ISR(void)
+{
+	static int value = 0;
+
+	rTINT_CSTAT |= ((1<<5)|1);
+	GIC_Clear_Pending_Clear(0,69);
+	GIC_Write_EOI(0, 69);
+
+	LED_Display(value);
+	value = (value + 1) % 4;
+}
 
 void (*ISR_Vector[])(void) =
 {
@@ -178,80 +261,3 @@ void (*ISR_Vector[])(void) =
 		Invalid_ISR,		// 118
 		Invalid_ISR,		// 119
 };
-
-void Invalid_ISR(void)
-{
-	Uart1_Printf("Invalid_ISR\n");
-}
-
-volatile unsigned int sd_insert_flag = 0;
-volatile unsigned int sd_command_complete_flag = 0;
-volatile unsigned int sd_rd_buffer_flag = 0;
-volatile unsigned int sd_wr_buffer_flag = 0;
-volatile unsigned int sd_tr_flag = 0;
-
-void SDHC_ISR(void)
-{
-	volatile unsigned int tmp;
-
-	tmp = rNORINTSTS2;
-	rNORINTSTS2 = tmp;
-
-	if((tmp & (1 << 6)) || (tmp & (1 << 7)))
-	{
-		if (Macro_Check_Bit_Set(rPRNSTS2,16)) sd_insert_flag = 1;
-		else sd_insert_flag = 0;
-	}
-
-
-	if(tmp & (1 << 5)) sd_rd_buffer_flag = 1;
-	if(tmp & (1 << 4)) sd_wr_buffer_flag = 1;
-	if(tmp & (1 << 1)) sd_tr_flag = 1;
-	if(tmp & 1) sd_command_complete_flag = 1;
-
-	GIC_Clear_Pending_Clear(0,107);
-	GIC_Write_EOI(0, 107);
-}
-
-void Uart1_ISR(void)
-{
-	rUINTSP1 = 0xf;
-	rUINTP1 = 0xf;
-
-	GIC_Clear_Pending_Clear(0,85);
-	GIC_Write_EOI(0, 85);
-
-	Uart1_Printf("Uart1 => %c\n", rURXH1);
-}
-
-void Key3_ISR(void)
-{
-	rEXT_INT40_PEND = 0x1<<3;
-
-	Uart1_Printf("Key3 Pressed\n");
-
-	GIC_Clear_Pending_Clear(0,51);
-	GIC_Write_EOI(0, 51);
-}
-
-void Key4_ISR(void)
-{
-	rEXT_INT40_PEND = 0x1<<4;
-
-	Uart1_Printf("Key4 Pressed\n");
-
-	GIC_Clear_Pending_Clear(0,52);
-	GIC_Write_EOI(0, 52);
-}
-
-void Timer0_ISR(void)
-{
-	static int value = 0;
-
-	rTINT_CSTAT |= ((1<<5)|1);
-	GIC_Clear_Pending_Clear(0,69);
-	GIC_Write_EOI(0, 69);
-
-	LED_Display(value);
-	value = (value + 1) % 4;
-}

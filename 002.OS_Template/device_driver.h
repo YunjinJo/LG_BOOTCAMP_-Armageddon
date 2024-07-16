@@ -47,6 +47,12 @@ extern unsigned int Main_ID(void);
 extern unsigned int TLB_Type(void);
 extern void Run_App(unsigned int addr, unsigned int stack);
 
+extern void save_context();
+extern void restore_context();
+
+extern unsigned int set_ttbr_app_0();
+extern void set_ttbr_app_1();
+
 //timer
 extern void Timer0_Delay(int mtime);
 extern void Timer0_Int_Delay(int en, int mtime);

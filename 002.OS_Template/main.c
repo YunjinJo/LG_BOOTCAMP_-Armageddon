@@ -98,6 +98,8 @@ void Main(void)
 		CoInvalidateMainTlb();
 
 		CoSetASID(0); // App0의 asid 0으로 설정
+		Timer0_Int_Delay(1,100);
+		sel_reg_info = reg_info_app0;
 		Run_App(RAM_APP0, STACK_BASE_APP0); // App0부터 실행 시작
 	}
 }

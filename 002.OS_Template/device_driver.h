@@ -50,6 +50,11 @@ extern unsigned int Get_CPSR(void);
 extern void context_save(void);
 extern void Get_Context_And_Switch(void);
 
+extern void context_save_1(void);
+extern void Get_Context_And_Switch_1(void);
+
+extern unsigned int Get_ASID(void);
+
 //timer
 extern void Timer0_Delay(int mtime);
 extern void Timer0_Int_Delay(int en, int mtime);

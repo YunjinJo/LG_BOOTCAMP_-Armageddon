@@ -117,44 +117,39 @@ TLB_Type:
 	mrc 	p15, 0, r0, c0, c0, 3
 	bx 		lr
 
+	.global Get_ASID
+Get_ASID:
+	MRC    p15,0,r0,c13,c0,1
+	bx lr
 
-
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@ unsigned int Get_CPSR(void);
-@ CPSR 값을 리턴
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	.global Get_CPSR
 Get_CPSR:
 	mrs		r0, cpsr
 	bx 		lr
 
-	.extern reg_info_app0
-	.extern Key3_ISR
+	.extern sel_reg_info
+	.extern Timer0_ISR
 	.global context_save
 context_save:
-	push {r0, r14}
-	ldr r14, =reg_info_app0
+	pop {r0-r3,r12}
+	ldr r14, =sel_reg_info
 	ldr r14, [r14, #0]
-
 	add r14, r14, #8
 	stmia r14, {r0-r14}^
-	sub r14, r14, #8
 
-	mov r1, r14
-
-	pop {r0, r14}
-
-	sub r0, r14, #4
-	str r0, [r1]
+	sub r1, r14, #8
+	pop {r14}
+	sub lr, lr, #4
+	str r14, [r1]
 
 	mrs r0, spsr
 	str r0, [r1, #4]
 
-	b Key3_ISR
+	b Timer0_ISR
 	.extern reg_info_app1
 	.global Get_Context_And_Switch
 Get_Context_And_Switch:
-	ldr r14, =reg_info_app1
+	ldr r14, =sel_reg_info
 	ldr r14, [r14, #0]
 
 	add r14, r14, #8
@@ -164,10 +159,50 @@ Get_Context_And_Switch:
 	push	{r0-r1}
 	add r0, r14, #4
 	ldr r0, [r0]
-	msr spsr, r0
+	msr spsr_csfx, r0
 
 	pop {r0-r1}
 	ldr r14, [r14]
-	subs pc, r14, #4
+	movs pc, r14
+
+
+
+@ ////////
+	.extern Key4_ISR
+	.global context_save_1
+context_save_1:
+	pop {r0-r3,r12}
+	@ldr r14, =reg_info_app1
+	ldr r14, [r14, #0]
+	add r14, r14, #8
+	stmia r14, {r0-r14}^
+
+	sub r1, r14, #8
+	pop {r14}
+	sub lr, lr, #4
+	str r14, [r1]
+
+	mrs r0, spsr
+	str r0, [r1, #4]
+
+	b Key4_ISR
+
+	.global Get_Context_And_Switch_1
+Get_Context_And_Switch_1:
+	@ldr r14, =reg_info_app0
+	ldr r14, [r14, #0]
+
+	add r14, r14, #8
+	ldmia r14, {r0-r14}^
+	sub r14, r14, #8
+
+	push	{r0-r1}
+	add r0, r14, #4
+	ldr r0, [r0]
+	msr spsr_csfx, r0
+
+	pop {r0-r1}
+	ldr r14, [r14]
+	movs pc, r14
 
 .end

@@ -1,4 +1,5 @@
 #include "device_driver.h"
+#include "global.h"
 
 void Undef_Handler(unsigned int addr, unsigned int mode)
 {
@@ -108,7 +109,7 @@ void (*ISR_Vector[])(void) =
 		Invalid_ISR,		// 48
 		Invalid_ISR,		// 49
 		Invalid_ISR,		// 50
-		Key3_ISR,			// 51
+		context_save,			// 51
 		Key4_ISR,			// 52
 		Invalid_ISR,		// 53
 		Invalid_ISR,		// 54
@@ -226,12 +227,22 @@ void Uart1_ISR(void)
 
 void Key3_ISR(void)
 {
+	int i = 0;
 	rEXT_INT40_PEND = 0x1<<3;
 
 	Uart1_Printf("Key3 Pressed\n");
 
 	GIC_Clear_Pending_Clear(0,51);
 	GIC_Write_EOI(0, 51);
+
+	for (i = 0; i < 15; i++) {
+		Uart1_Printf("REG %d : %X\n", i, reg_info_app0->registers[i]);
+	}
+	Uart1_Printf("PC : %X\n", reg_info_app0->PC);
+	Uart1_Printf("CPSR : %X\n", reg_info_app0->CPSR);
+	CoSetTTBase((0x44080000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
+	CoInvalidateMainTlb();
+	Get_Context_And_Switch();
 }
 
 void Key4_ISR(void)

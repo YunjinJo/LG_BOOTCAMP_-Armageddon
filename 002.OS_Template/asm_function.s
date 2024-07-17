@@ -117,4 +117,58 @@ TLB_Type:
 	mrc 	p15, 0, r0, c0, c0, 3
 	bx 		lr
 
-	.end
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@ unsigned int Get_CPSR(void);
+@ CPSR 값을 리턴
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	.global Get_CPSR
+Get_CPSR:
+	mrs		r0, cpsr
+	bx 		lr
+
+	.extern reg_info_app0
+	.extern reg_info_app1
+	.extern Key3_ISR
+	.global context_save
+context_save:
+	push {r0, r14}
+	ldr r14, =reg_info_app0
+	ldr r14, [r14, #0]
+
+	add r14, r14, #8
+	stmia r14, {r0-r14}^
+	sub r14, r14, #8
+
+	mov r1, r14
+
+	pop {r0, r14}
+
+	sub r0, r14, #4
+	str r0, [r1]
+
+	mrs r0, spsr
+	str r0, [r1, #4]
+
+	b Key3_ISR
+
+	.global Get_Context_And_Switch
+Get_Context_And_Switch:
+	ldr r14, =reg_info_app0
+	ldr r14, [r14, #0]
+
+	add r14, r14, #8
+	ldmia r14, {r0-r14}^
+	sub r14, r14, #8
+
+	push	{r0-r1}
+	add r0, r14, #4
+	ldr r0, [r0]
+	msr spsr, r0
+
+	pop {r0-r1}
+	ldr r14, [r14]
+	movs pc, r14
+
+.end

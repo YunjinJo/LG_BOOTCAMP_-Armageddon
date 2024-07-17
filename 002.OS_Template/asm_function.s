@@ -168,6 +168,7 @@ Get_Context_And_Switch:
 	msr spsr, r0
 
 	pop {r0-r1}
+
 	ldr r14, [r14]
 	movs pc, r14
 

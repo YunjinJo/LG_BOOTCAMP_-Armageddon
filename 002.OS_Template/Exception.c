@@ -240,7 +240,7 @@ void Key3_ISR(void)
 	}
 	Uart1_Printf("PC : %X\n", reg_info_app0->PC);
 	Uart1_Printf("CPSR : %X\n", reg_info_app0->CPSR);
-	CoSetTTBase((0x44080000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
+	CoSetTTBase((0x44000000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
 	CoInvalidateMainTlb();
 	Get_Context_And_Switch();
 }

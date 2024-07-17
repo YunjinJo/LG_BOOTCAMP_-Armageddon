@@ -129,7 +129,6 @@ Get_CPSR:
 	bx 		lr
 
 	.extern reg_info_app0
-	.extern reg_info_app1
 	.extern Key3_ISR
 	.global context_save
 context_save:
@@ -152,10 +151,10 @@ context_save:
 	str r0, [r1, #4]
 
 	b Key3_ISR
-
+	.extern reg_info_app1
 	.global Get_Context_And_Switch
 Get_Context_And_Switch:
-	ldr r14, =reg_info_app0
+	ldr r14, =reg_info_app1
 	ldr r14, [r14, #0]
 
 	add r14, r14, #8
@@ -168,8 +167,7 @@ Get_Context_And_Switch:
 	msr spsr, r0
 
 	pop {r0-r1}
-
 	ldr r14, [r14]
-	movs pc, r14
+	subs pc, r14, #4
 
 .end

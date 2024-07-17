@@ -49,12 +49,12 @@ void SVC_Handler(unsigned int addr, unsigned int mode)
 	Uart_Printf("SVC-ID[%u]\n", Macro_Extract_Area(*(unsigned int *)addr, 0xffffff, 0));
 }
 
-void Invalid_ISR(void)	__attribute__ ((interrupt ("IRQ")));
-void Uart1_ISR(void)	__attribute__ ((interrupt ("IRQ")));
-void Timer0_ISR(void) 	__attribute__ ((interrupt ("IRQ")));
-void Key3_ISR(void)		__attribute__ ((interrupt ("IRQ")));
-void Key4_ISR(void)		__attribute__ ((interrupt ("IRQ")));
-void SDHC_ISR(void) 	__attribute__ ((interrupt ("IRQ")));
+void Invalid_ISR(void);	//__attribute__ ((interrupt ("IRQ")));
+void Uart1_ISR(void);	//__attribute__ ((interrupt ("IRQ")));
+void Timer0_ISR(void); //	__attribute__ ((interrupt ("IRQ")));
+void Key3_ISR(void);		//__attribute__ ((interrupt ("IRQ")));
+void Key4_ISR(void);		//__attribute__ ((interrupt ("IRQ")));
+void SDHC_ISR(void); 	//__attribute__ ((interrupt ("IRQ")));
 
 void (*ISR_Vector[])(void) =
 {
@@ -236,12 +236,13 @@ void Key3_ISR(void)
 	GIC_Write_EOI(0, 51);
 
 	for (i = 0; i < 15; i++) {
-		Uart1_Printf("REG %d : %X\n", i, reg_info_app0->registers[i]);
+		Uart1_Printf("REG %d : %X\n", i, reg_info_app1->registers[i]);
 	}
-	Uart1_Printf("PC : %X\n", reg_info_app0->PC);
-	Uart1_Printf("CPSR : %X\n", reg_info_app0->CPSR);
-	CoSetTTBase((0x44000000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
+	Uart1_Printf("PC : %X\n", reg_info_app1->PC);
+	Uart1_Printf("CPSR : %X\n", reg_info_app1->CPSR);
+	CoSetTTBase((0x44080000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
 	CoInvalidateMainTlb();
+	CoSetASID(1);
 	Get_Context_And_Switch();
 }
 

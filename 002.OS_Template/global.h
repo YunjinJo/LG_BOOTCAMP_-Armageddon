@@ -9,6 +9,8 @@
 #define GLOBAL_H_
 #include "type_define.h"
 
+extern REG_INFO *sel_reg_info;
+
 extern REG_INFO *reg_info_app0;
 extern REG_INFO *reg_info_app1;
 

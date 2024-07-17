@@ -2,6 +2,8 @@
 #include "macro.h"
 #include "option.h"
 #include "cp15.h"
+#include "pcb_list.h"
+
 
 #include <malloc.h>
 #include <stdarg.h>
@@ -47,11 +49,13 @@ extern unsigned int Main_ID(void);
 extern unsigned int TLB_Type(void);
 extern void Run_App(unsigned int addr, unsigned int stack);
 
-extern void save_context();
-extern void restore_context();
+extern void Save_Context(void);
+extern void Restore_Context_And_Switch(void);
 
-extern unsigned int set_ttbr_app_0();
-extern void set_ttbr_app_1();
+extern unsigned int set_ttbr_app_0(void);
+extern unsigned int set_ttbr_app_1(void);
+
+extern void switch_app();
 
 //timer
 extern void Timer0_Delay(int mtime);

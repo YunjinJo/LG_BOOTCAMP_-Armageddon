@@ -77,7 +77,7 @@ void App_Read(unsigned int sector, unsigned int size, unsigned int addr)
 	}
 }
 
-void start_app_0()
+void start_app_0(void)
 {
 	Uart_Printf("\nAPP0 RUN\n", 0);
 //	Uart_Printf("\n==========\n");
@@ -95,7 +95,7 @@ void start_app_0()
 	Run_App(RAM_APP0, STACK_BASE_APP0);
 }
 
-void start_app_1()
+void start_app_1(void)
 {
 	Uart_Printf("\nAPP1 RUN\n", 1);
 //	Uart_Printf("\n==========\n");
@@ -106,7 +106,7 @@ void start_app_1()
 //	Uart_Printf("\n==========\n");
 	CoSetASID(2);
 	Uart_Printf("ASID: %d\n", CoGetASID());
-	set_ttbr_app_1();
+	Uart_Printf("\n TTBR1 : %X", set_ttbr_app_1());
 	Uart_Printf("ASID: %d\n", CoGetASID());
 
 	Run_App(RAM_APP0, STACK_BASE_APP1);
@@ -173,12 +173,23 @@ void Main(void)
 	}
 #endif
 
+	pcb_list_init(RAM_APP0, STACK_BASE_APP0, STACK_BASE_APP1);
+
+	int i;
+	for (i=0; i<17; i++)
+	{
+		Uart_Printf("pcb_list[0] r%d : 0x%x \n", i, pcb_list[0][i]);
+		Uart_Printf("pcb_list[1] r%d : 0x%x \n", i, pcb_list[1][i]);
+	}
+
 	for(;;)
 	{
 		unsigned char x;
 
 		Uart_Printf("\nAPP [1]APP0, [2]APP1 >> ");
 		x = Uart1_Get_Char();
+
+//		Timer0_Int_Delay(1, 100);
 
 		if(x == '1')
 		{
@@ -189,5 +200,16 @@ void Main(void)
 		{
 			start_app_1();
 		}
+
+
+		if (CoGetASID() == 1)
+		{
+		}
+
+		if (CoGetASID() == 2)
+		{
+		}
 	}
 }
+
+

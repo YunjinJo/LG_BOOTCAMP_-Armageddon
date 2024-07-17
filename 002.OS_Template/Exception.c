@@ -102,6 +102,34 @@ void Uart1_ISR(void)
 	Uart1_Printf("Uart1 => %c\n", rURXH1);
 }
 
+void IRQ_Context_Switch(void)
+{
+	Uart1_Printf("did it reach IRQ_Context_Switch?\n");
+
+	rEXT_INT40_PEND = 0x1<<3;
+	GIC_Clear_Pending_Clear(0,51);
+	GIC_Write_EOI(0, 51);
+
+	int i;
+	unsigned int curAsid = CoGetASID();
+	Uart1_Printf("curAsid: %d\n", curAsid);
+
+	for (i=0; i<17; i++)
+	{
+		pcb_list[(curAsid==1)?0:1][i] = current_pcb[i];
+		Uart1_Printf("pre - current_pcb register %d : 0x%x\n", i, current_pcb[i]);
+		current_pcb[i] = pcb_list[(curAsid==1)?1:0][i];
+		Uart1_Printf("post - current_pcb register %d : 0x%x\n", i, current_pcb[i]);
+		Uart1_Printf("pcb_list[%d] register %d : 0x%x\n", (curAsid==1)?0:1, i, pcb_list[(curAsid==1)?0:1][i]);
+		Uart1_Printf("pcb_list[%d] register %d : 0x%x\n", (curAsid==1)?1:0, i, pcb_list[(curAsid==1)?1:0][i]);
+	}
+
+	CoSetASID((curAsid == 1) ? 2 : 1);
+	Uart1_Printf("curAsid: %d\n", CoGetASID());
+	CoSetTTBase(((CoGetASID() == 1) ? 0x44000000 : 0x44004000)|(0<<6)|(1<<3)|(0<<1)|(1<<0)); //WT_WBWA
+	Restore_Context_And_Switch();
+}
+
 void Key3_ISR(void)
 {
 	rEXT_INT40_PEND = 0x1<<3;
@@ -110,17 +138,13 @@ void Key3_ISR(void)
 
 	GIC_Clear_Pending_Clear(0,51);
 	GIC_Write_EOI(0, 51);
-	//save_context();
 
-	Uart1_Printf("Key3 debug0\n");
-//	set_ttbr_app_0();
-	CoSetTTBase(0x44000000);
-	Uart1_Printf("Key3 debug1\n");
-	Uart1_Printf("Key3 debug1 - ASID: %d\n", CoGetASID());
-	CoSetASID(1);
-	Uart1_Printf("Key3 debug2\n");
-	Uart1_Printf("Key3 debug2 - ASID: %d\n", CoGetASID());
+
+
+
+
 }
+
 
 void Key4_ISR(void)
 {
@@ -128,9 +152,6 @@ void Key4_ISR(void)
 
 	Uart1_Printf("Key4 Pressed\n");
 
-	GIC_Clear_Pending_Clear(0,52);
-	GIC_Write_EOI(0, 52);
-	//restore_context();
 
 	Uart1_Printf("Key4 debug0\n");
 //	set_ttbr_app_1();
@@ -140,6 +161,10 @@ void Key4_ISR(void)
 	CoSetASID(2);
 	Uart1_Printf("Key4 debug2\n");
 	Uart1_Printf("Key4 debug2 - ASID: %d\n", CoGetASID());
+
+	GIC_Clear_Pending_Clear(0,52);
+	GIC_Write_EOI(0, 52);
+	//restore_context();
 }
 
 void Timer0_ISR(void)
@@ -149,6 +174,8 @@ void Timer0_ISR(void)
 	rTINT_CSTAT |= ((1<<5)|1);
 	GIC_Clear_Pending_Clear(0,69);
 	GIC_Write_EOI(0, 69);
+
+	Uart1_Printf("Timer0_ISR called\n");
 
 	LED_Display(value);
 	value = (value + 1) % 4;
@@ -207,8 +234,8 @@ void (*ISR_Vector[])(void) =
 		Invalid_ISR,		// 48
 		Invalid_ISR,		// 49
 		Invalid_ISR,		// 50
-		Key3_ISR,			// 51
-		Key4_ISR,			// 52
+		Save_Context,			// 51
+		Save_Context,			// 52
 		Invalid_ISR,		// 53
 		Invalid_ISR,		// 54
 		Invalid_ISR,		// 55

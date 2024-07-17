@@ -25,6 +25,8 @@ __start:
 @--------------------------------------------------
 
 	.extern ISR_Vector
+	.extern current_app_state
+	.extern new_app_state
 
 HandlerIRQ:
 	push 	{r0-r3, r12, lr}

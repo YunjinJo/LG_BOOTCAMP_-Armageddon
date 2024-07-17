@@ -41,28 +41,53 @@ Get_User_Stack_Limit:
 	bx 		lr
 
 @ 현재 프로세스의 상태를 저장하는 함수
-	.global save_context
-save_context:
-    @ 스택에 레지스터를 저장
-    stmfd   sp!, {r0-r12, lr}
-    mrs     r0, cpsr
-    stmfd   sp!, {r0}
-    @ 현재 스택 포인터를 저장
-    b Get_User_SP
-    str     sp, [r0]
-    bx      lr
+	.extern current_pcb
+	.extern IRQ_Context_Switch
+	.global Save_Context
+Save_Context:
+
+	@IRQ mode 백업
+	push	{r0, r14}
+
+	@현재까지 실행되던 app의 pcb 주소 가지고 오기
+	ldr		r14, =current_pcb
+
+	@usr/sys 모드 r0-r14까지 백업
+	stmia	r14, {r0-r14}^
+
+	@현재까지 실행되던 app의 cpsr 백업
+	@mrs		r0, spsr
+	@str		r0, [r14, #64]
+
+	@IRQ mode 복원
+	pop		{r0, r14} @이제 r14 -> 복귀할 주소
+
+	b		IRQ_Context_Switch
 
 @ 다른 프로세스의 상태를 복원하는 함수
-	.global restore_context
-restore_context:
-    @ 새로운 스택 포인터를 로드
-    ldr     r0, =SYS_STACK_BASE
-    ldr     sp, [r0]
-    @ CPSR을 복원
-    ldmfd   sp!, {r0}
-    msr     cpsr, r0
-    @ 레지스터를 복원
-    ldmfd   sp!, {r0-r12, pc}
+	.extern current_pcb
+	.global Restore_Context_And_Switch
+Restore_Context_And_Switch:
+    @ usr/sys r0-r14 복원
+	ldr		r14, =current_pcb
+	ldmia	r14, {r0-r14}^
+
+	@r0를 사용하기 전에 미리 백업
+	push	{r0-r1}
+
+	@spsr 복원
+	@ldr		r0, [r0]
+	@msr		spsr, r0
+
+	@ IRQ lr 복원
+	ldr		r14, [r14, #56]
+
+	@r0 복원
+	pop		{r0-r1}
+
+	@ 다음 실행할 명령를 pc로 전달
+	subs	pc, lr, #4
+
 
 
 	.global set_ttbr_app_0

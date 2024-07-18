@@ -54,13 +54,21 @@ void _Print_Test_SVC(TEST_T input)
 	Uart_Printf("input f : %d\n", input.f);
 }
 
-void _Print_Test_SVC_1(void)
+void SVC_Print_Hello(void)
 {
-    Uart_Printf("SVC1 Service...\n");
+    Uart_Printf("SVC0 Service...\n");
     Uart_Printf("Hello\n");
 }
 
-void * SVC_Handler[] = {print_test, _Print_Test_SVC_1};
+
+
+void * SVC_Handler[] = {
+	print_test, 
+	(void *) SVC_Print_Hello,
+	(void *) Lcd_Clr_Screen,
+	(void *) Lcd_Draw_BMP,
+	(void *) Uart_Printf,
+	};
 
 //void SVC_Handler(unsigned int addr, unsigned int mode)
 //{

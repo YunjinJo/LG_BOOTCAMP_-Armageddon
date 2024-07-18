@@ -32,6 +32,44 @@ extern WIN_INFO_ST ArrWinInfo[5];
 #define SECTOR_SIZE 		512
 #define ALIGN_SECTOR(x)	 	((((x+(SECTOR_SIZE-1))&~(SECTOR_SIZE-1))/SECTOR_SIZE))
 
+#define TT_APP_0 (MMU_PAGE_TABLE_BASE)
+#define TT_APP_1 (MMU_PAGE_TABLE_BASE + (16 * 1024))
+
+
+typedef struct {
+	unsigned int uVaStart;
+	unsigned int uVaEnd;
+	unsigned int uPaStart;
+	unsigned int attr;
+}TT_info;
+
+TT_info info_app_0 = {RAM_APP0, (RAM_APP0+SIZE_APP0-1), RAM_APP0, (RW_WBWA | (1 << 17))};
+TT_info info_stack_app_0 = {STACK_LIMIT_APP0, STACK_BASE_APP0-1, STACK_LIMIT_APP0, RW_WBWA};
+TT_info info_app_1 = {RAM_APP0, (RAM_APP0+SIZE_APP1-1), RAM_APP1, (RW_WBWA | (1 << 17))};
+TT_info info_stack_app_1 = {STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, RW_WBWA};
+
+void init_transtable(unsigned int tt_app_addr, TT_info info)
+{
+	int i = 0;
+	unsigned int *pTT;
+	unsigned int nNumOfSec;
+
+	info.uPaStart &= ~0xfffff;
+	info.uVaStart &= ~0xfffff;
+
+	pTT = (unsigned int *) tt_app_addr + (info.uVaStart>>20);
+	nNumOfSec = (0x1000+(info.uVaEnd>>20)-(info.uVaStart>>20))%0x1000;
+
+	for(i=0; i<=nNumOfSec; i++)
+	{
+		Uart_Printf("\npTT : %p\n", pTT);
+		Uart_Printf("\n*pTT : %X\n", *pTT);
+		*pTT = info.attr|(info.uPaStart+(i<<20));
+		Uart_Printf("\n changed *pTT : %X\n", *pTT);
+		pTT++;
+	}
+}
+
 void App_Read(unsigned int sector, unsigned int size, unsigned int addr)
 {
 	int i;
@@ -99,6 +137,20 @@ void Main(void)
 	GIC_Set_Priority_Mask(0,0xFF);
 	GIC_Distributor_Enable(1);
 
+	Uart_Printf("\n==========\n");
+
+	init_transtable(TT_APP_0, info_app_0);
+	init_transtable(TT_APP_0, info_stack_app_0);
+
+	Uart_Printf("\n==========\n");
+
+	Uart_Printf("\n==========\n");
+
+	init_transtable(TT_APP_1, info_app_1);
+	init_transtable(TT_APP_1, info_stack_app_1);
+
+	Uart_Printf("\n==========\n");
+
 #if 0 // SD Loading
 	{
 		extern volatile unsigned int sd_insert_flag;
@@ -125,6 +177,5 @@ void Main(void)
 		SetTransTable_app1(STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, RW_WBWA);
 		//CoInvalidateMainTlb();
 		start_app(SEL_APP0); // SEL_APP0 or SEL_APP1
-
 	}
 }

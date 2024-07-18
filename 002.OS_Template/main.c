@@ -104,7 +104,7 @@ void Main(void)
 		extern volatile unsigned int sd_insert_flag;
 		SDHC_Init();
 		SDHC_ISR_Enable(1);
-		if(!sd_insert_flag) Uart_Printf("SD 카드 삽입 요망!\n");
+		if(!sd_insert_flag) Uart_Printf("SD \n");
 		while(!sd_insert_flag);
 		SDHC_Card_Init();
 
@@ -120,7 +120,7 @@ void Main(void)
 		SetTransTable(RAM_APP0, (RAM_APP0+SIZE_APP0-1), RAM_APP0, RW_WBWA | NG_ON);
 		SetTransTable(STACK_LIMIT_APP0, STACK_BASE_APP0-1, STACK_LIMIT_APP0, RW_WBWA);
 
-		CoTTSet_L1L2_app1(); // app1의 VA 영역 초기화
+		CoTTSet_L1L2_app1();
 		SetTransTable_app1(RAM_APP0, (RAM_APP0+SIZE_APP1-1), RAM_APP1, RW_WBWA | NG_ON);
 		SetTransTable_app1(STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, RW_WBWA);
 		//CoInvalidateMainTlb();

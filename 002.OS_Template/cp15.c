@@ -160,6 +160,113 @@ void SetTransTable(unsigned int uVaStart, unsigned int uVaEnd, unsigned int uPaS
 	}
 }
 
+
+void SetTransTable_app1(unsigned int uVaStart, unsigned int uVaEnd, unsigned int uPaStart, unsigned int attr)
+{
+	int i;
+	unsigned int* pTT;
+	unsigned int nNumOfSec;
+
+	uPaStart &= ~0xfffff;
+	uVaStart &= ~0xfffff;
+
+	pTT = (unsigned int *)0x44080000+(uVaStart>>20);
+	nNumOfSec = (0x1000+(uVaEnd>>20)-(uVaStart>>20))%0x1000;
+	for(i=0; i<=nNumOfSec; i++)
+	{
+		*pTT++ = attr|(uPaStart+(i<<20));
+	}
+}
+
+void set_second_table_address_App0(void)
+{
+	unsigned int* pTT;
+
+	pTT = (unsigned int *) 0x44001104; // 시작 주소
+	*pTT++ = 0x44040000 | 0x1; //0x44001104
+	*pTT++ = 0x44040400 | 0x1;//0x440011080
+	*pTT++ = 0x44040800| 0x1;//0x4400110c
+	*pTT = 0x44040c00 | 0x1; //0x44001110
+}
+void set_second_table_address_App1(void)
+{
+	unsigned int* pTT;
+
+	pTT = (unsigned int *) 0x44081104; // 시작 주소
+	*pTT++ = 0x440c0000 | 0x1; //0x44081104
+	*pTT++ = 0x440c0400 | 0x1;//0x44081108
+	*pTT++ = 0x440c0800| 0x1;//0x4408110c
+	*pTT = 0x440c0c00 | 0x1; //0x44081110
+}
+
+void init_second_table_descriptor_App0(void)
+{
+	unsigned int* pTT;
+	int i;
+	pTT = (unsigned int *) SND_PAGE_TABLE_BASE_APP0; //section1
+	for (i=0; i<256; i++)
+	{
+		//*pTT++ = 0x2 | WT; //WT 설정
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA 설정
+	}
+
+	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP0 + 0x400) ; //section2
+	for (i=0; i<256; i++)
+	{
+		//*pTT++ = 0x2 | WT;
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA 설정
+	}
+
+	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP0 + 0x800); //section3
+	for (i=0; i<256; i++)
+	{
+		//*pTT++ = 0x2 | WT;
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA 설정
+	}
+
+	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP0 + 0xc00); //section4
+	for (i=0; i<256; i++)
+	{
+		//*pTT++ = 0x2 | WT;
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA 설정
+	}
+}
+
+
+void init_second_table_descriptor_App1(void)
+{
+	unsigned int* pTT;
+	int i;
+	pTT = (unsigned int *) SND_PAGE_TABLE_BASE_APP1; //section1
+	for (i=0; i<256; i++)
+	{
+		//*pTT++ = 0x2 | WT;
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA 설정
+	}
+
+	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP1 + 0x400); //section2
+	for (i=0; i<256; i++)
+	{
+		//*pTT++ = 0x2 | WT;
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA 설정
+	}
+
+	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP1 + 0x800); //section3
+	for (i=0; i<256; i++)
+	{
+		//*pTT++ = 0x2 | WT;
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA 설정
+	}
+
+	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP1 + 0xc00); //section4
+	for (i=0; i<256; i++)
+	{
+		//*pTT++ = 0x2 | WT;
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA 설정
+	}
+}
+
+
 static void CoTTSet_L1(void);
 static void CoTTSet_L1L2(void);
 
@@ -346,4 +453,31 @@ static void CoTTSet_L1L2(void)
 
 	CoSetTTBase(MMU_PAGE_TABLE_BASE|(1<<6)|(1<<3)|(0<<1)|(0<<0));
 	CoSetDomain(0x55555550|(DOMAIN_NO_ACCESS<<2)|(DOMAIN_CLIENT));
+}
+
+void CoTTSet_L1L2_app1(void)
+{
+	SetTransTable_app1(0x00000000, 0x0CDFFFFF, 0x00000000, RW_NO_ACCESS);
+	SetTransTable_app1(0x0CE00000, 0x13FFFFFF, 0x0CE00000, RW_NCNB);
+	SetTransTable_app1(0x14000000, DRAM_START_ADDR-1, 0x14000000, RW_NO_ACCESS);
+	SetTransTable_app1(DRAM_START_ADDR, MMU_PAGE_TABLE_BASE-1, DRAM_START_ADDR, RW_WT_WBWA); //RW_WBWA, RW_WT, RW_WT_WBWA
+	SetTransTable_app1(MMU_PAGE_TABLE_BASE, MMU_PAGE_TABLE_LIMIT-1, MMU_PAGE_TABLE_BASE, RW_WT_WBWA); //RW_WBWA, RW_WT, RW_WT_WBWA
+
+	/* Free Memory */
+	SetTransTable_app1(MMU_PAGE_TABLE_LIMIT, LCD_FB00_START_ADDR-1, MMU_PAGE_TABLE_LIMIT, RW_WT_WBWA); //RW_WBWA, RW_WT, RW_WT_WBWA
+
+	/* LCD Frame Buffer */
+	SetTransTable_app1(LCD_FB00_START_ADDR, LCD_FB01_START_ADDR-1, LCD_FB00_START_ADDR, RW_WT);
+	SetTransTable_app1(LCD_FB01_START_ADDR, LCD_FB10_START_ADDR-1, LCD_FB01_START_ADDR, RW_WT);
+	SetTransTable_app1(LCD_FB10_START_ADDR, LCD_FB11_START_ADDR-1, LCD_FB10_START_ADDR, RW_WT);
+	SetTransTable_app1(LCD_FB11_START_ADDR, LCD_FB20_START_ADDR-1, LCD_FB11_START_ADDR, RW_WT);
+	SetTransTable_app1(LCD_FB20_START_ADDR, LCD_FB21_START_ADDR-1, LCD_FB20_START_ADDR, RW_WT);
+	SetTransTable_app1(LCD_FB21_START_ADDR, LCD_FB30_START_ADDR-1, LCD_FB21_START_ADDR, RW_WT);
+	SetTransTable_app1(LCD_FB30_START_ADDR, LCD_FB31_START_ADDR-1, LCD_FB30_START_ADDR, RW_WT);
+	SetTransTable_app1(LCD_FB31_START_ADDR, LCD_FB40_START_ADDR-1, LCD_FB31_START_ADDR, RW_WT);
+	SetTransTable_app1(LCD_FB40_START_ADDR, LCD_FB41_START_ADDR-1, LCD_FB40_START_ADDR, RW_WT);
+	SetTransTable_app1(LCD_FB41_START_ADDR, LCD_FB_END_ADDR-1,     LCD_FB41_START_ADDR, RW_WT);
+
+	SetTransTable_app1(LCD_FB_END_ADDR, 0x80000000-1, LCD_FB_END_ADDR, RW_NO_ACCESS);
+	SetTransTable_app1(0x80000000, 0xFFFFFFFF, 0x80000000, RW_NO_ACCESS);
 }

@@ -1,4 +1,5 @@
 #include "device_driver.h"
+#include "global.h"
 
 void Undef_Handler(unsigned int addr, unsigned int mode)
 {
@@ -23,7 +24,7 @@ void Dabort_Handler(unsigned int addr, unsigned int mode)
 	Uart_Printf("Reason[0x%X]\nDomain[0x%X]\nRead(0)/Write(1)[%d]\nAXI-Decode(0)/Slave(1)[%d]\n", r, d, w, sd);
 
 #if 0
-	for(;;); /* ½ÇÇèÀ» À§ÇÏ¿© ´ÙÀ½ ÁÖ¼Ò·Î º¹±ÍÇÏµµ·Ï ÇÚµé·¯¸¦ ¼³°è */
+	for(;;); /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼Ò·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½Úµé·¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 #endif
 }
 
@@ -48,111 +49,12 @@ void SVC_Handler(unsigned int addr, unsigned int mode)
 	Uart_Printf("SVC-ID[%u]\n", Macro_Extract_Area(*(unsigned int *)addr, 0xffffff, 0));
 }
 
-//void Invalid_ISR(void)	__attribute__ ((interrupt ("IRQ")));
-//void Uart1_ISR(void)	__attribute__ ((interrupt ("IRQ")));
-//void Timer0_ISR(void) 	__attribute__ ((interrupt ("IRQ")));
-//void Key3_ISR(void)		__attribute__ ((interrupt ("IRQ")));
-//void Key4_ISR(void)		__attribute__ ((interrupt ("IRQ")));
-//void SDHC_ISR(void) 	__attribute__ ((interrupt ("IRQ")));
-
-
-
-void Invalid_ISR(void)
-{
-	Uart1_Printf("Invalid_ISR\n");
-}
-
-volatile unsigned int sd_insert_flag = 0;
-volatile unsigned int sd_command_complete_flag = 0;
-volatile unsigned int sd_rd_buffer_flag = 0;
-volatile unsigned int sd_wr_buffer_flag = 0;
-volatile unsigned int sd_tr_flag = 0;
-
-void SDHC_ISR(void)
-{
-	volatile unsigned int tmp;
-
-	tmp = rNORINTSTS2;
-	rNORINTSTS2 = tmp;
-
-	if((tmp & (1 << 6)) || (tmp & (1 << 7)))
-	{
-		if (Macro_Check_Bit_Set(rPRNSTS2,16)) sd_insert_flag = 1;
-		else sd_insert_flag = 0;
-	}
-
-
-	if(tmp & (1 << 5)) sd_rd_buffer_flag = 1;
-	if(tmp & (1 << 4)) sd_wr_buffer_flag = 1;
-	if(tmp & (1 << 1)) sd_tr_flag = 1;
-	if(tmp & 1) sd_command_complete_flag = 1;
-
-	GIC_Clear_Pending_Clear(0,107);
-	GIC_Write_EOI(0, 107);
-}
-
-void Uart1_ISR(void)
-{
-	rUINTSP1 = 0xf;
-	rUINTP1 = 0xf;
-
-	GIC_Clear_Pending_Clear(0,85);
-	GIC_Write_EOI(0, 85);
-
-	Uart1_Printf("Uart1 => %c\n", rURXH1);
-}
-
-void Key3_ISR(void)
-{
-	rEXT_INT40_PEND = 0x1<<3;
-
-	Uart1_Printf("Key3 Pressed\n");
-
-	GIC_Clear_Pending_Clear(0,51);
-	GIC_Write_EOI(0, 51);
-	//save_context();
-
-	Uart1_Printf("Key3 debug0\n");
-//	set_ttbr_app_0();
-	CoSetTTBase(0x44000000);
-	Uart1_Printf("Key3 debug1\n");
-	Uart1_Printf("Key3 debug1 - ASID: %d\n", CoGetASID());
-	CoSetASID(1);
-	Uart1_Printf("Key3 debug2\n");
-	Uart1_Printf("Key3 debug2 - ASID: %d\n", CoGetASID());
-}
-
-void Key4_ISR(void)
-{
-	rEXT_INT40_PEND = 0x1<<4;
-
-	Uart1_Printf("Key4 Pressed\n");
-
-	GIC_Clear_Pending_Clear(0,52);
-	GIC_Write_EOI(0, 52);
-	//restore_context();
-
-	Uart1_Printf("Key4 debug0\n");
-//	set_ttbr_app_1();
-	CoSetTTBase(0x44004000);
-	Uart1_Printf("Key4 debug1\n");
-	Uart1_Printf("Key4 debug1 - ASID: %d\n", CoGetASID());
-	CoSetASID(2);
-	Uart1_Printf("Key4 debug2\n");
-	Uart1_Printf("Key4 debug2 - ASID: %d\n", CoGetASID());
-}
-
-void Timer0_ISR(void)
-{
-	static int value = 0;
-
-	rTINT_CSTAT |= ((1<<5)|1);
-	GIC_Clear_Pending_Clear(0,69);
-	GIC_Write_EOI(0, 69);
-
-	LED_Display(value);
-	value = (value + 1) % 4;
-}
+void Invalid_ISR(void);	//__attribute__ ((interrupt ("IRQ")));
+void Uart1_ISR(void);	//__attribute__ ((interrupt ("IRQ")));
+void Timer0_ISR(void); //	__attribute__ ((interrupt ("IRQ")));
+void Key3_ISR(void);		//__attribute__ ((interrupt ("IRQ")));
+void Key4_ISR(void);		//__attribute__ ((interrupt ("IRQ")));
+void SDHC_ISR(void); 	//__attribute__ ((interrupt ("IRQ")));
 
 void (*ISR_Vector[])(void) =
 {
@@ -207,8 +109,8 @@ void (*ISR_Vector[])(void) =
 		Invalid_ISR,		// 48
 		Invalid_ISR,		// 49
 		Invalid_ISR,		// 50
-		Key3_ISR,			// 51
-		Key4_ISR,			// 52
+		context_save,			// 51
+		context_save_1,			// 52
 		Invalid_ISR,		// 53
 		Invalid_ISR,		// 54
 		Invalid_ISR,		// 55
@@ -225,7 +127,7 @@ void (*ISR_Vector[])(void) =
 		Invalid_ISR,		// 66
 		Invalid_ISR,		// 67
 		Invalid_ISR,		// 68
-		Timer0_ISR,			// 69
+		context_save,			// 69
 		Invalid_ISR,		// 70
 		Invalid_ISR,		// 71
 		Invalid_ISR,		// 72
@@ -277,3 +179,114 @@ void (*ISR_Vector[])(void) =
 		Invalid_ISR,		// 118
 		Invalid_ISR,		// 119
 };
+
+void Invalid_ISR(void)
+{
+	Uart1_Printf("Invalid_ISR\n");
+}
+
+volatile unsigned int sd_insert_flag = 0;
+volatile unsigned int sd_command_complete_flag = 0;
+volatile unsigned int sd_rd_buffer_flag = 0;
+volatile unsigned int sd_wr_buffer_flag = 0;
+volatile unsigned int sd_tr_flag = 0;
+
+void SDHC_ISR(void)
+{
+	volatile unsigned int tmp;
+
+	tmp = rNORINTSTS2;
+	rNORINTSTS2 = tmp;
+
+	if((tmp & (1 << 6)) || (tmp & (1 << 7)))
+	{
+		if (Macro_Check_Bit_Set(rPRNSTS2,16)) sd_insert_flag = 1;
+		else sd_insert_flag = 0;
+	}
+
+
+	if(tmp & (1 << 5)) sd_rd_buffer_flag = 1;
+	if(tmp & (1 << 4)) sd_wr_buffer_flag = 1;
+	if(tmp & (1 << 1)) sd_tr_flag = 1;
+	if(tmp & 1) sd_command_complete_flag = 1;
+
+	GIC_Clear_Pending_Clear(0,107);
+	GIC_Write_EOI(0, 107);
+}
+
+void Uart1_ISR(void)
+{
+	rUINTSP1 = 0xf;
+	rUINTP1 = 0xf;
+
+	GIC_Clear_Pending_Clear(0,85);
+	GIC_Write_EOI(0, 85);
+
+	Uart1_Printf("Uart1 => %c\n", rURXH1);
+}
+
+void Key3_ISR(void)
+{
+	int i = 0;
+	rEXT_INT40_PEND = 0x1<<3;
+
+	Uart1_Printf("Key3 Pressed\n");
+
+	GIC_Clear_Pending_Clear(0,51);
+	GIC_Write_EOI(0, 51);
+
+	for (i = 0; i < 15; i++) {
+		Uart1_Printf("REG %d : %X\n", i, reg_info_app1->registers[i]);
+	}
+	Uart1_Printf("PC : %X\n", reg_info_app1->PC);
+	Uart1_Printf("CPSR : %X\n", reg_info_app1->CPSR);
+	CoSetTTBase((0x44080000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
+	//CoInvalidateMainTlb();
+	CoSetASID(1);
+	Get_Context_And_Switch();
+}
+
+void Key4_ISR(void)
+{
+	int i = 0;
+	rEXT_INT40_PEND = 0x1<<4;
+
+	Uart1_Printf("Key4 Pressed\n");
+
+	GIC_Clear_Pending_Clear(0,52);
+	GIC_Write_EOI(0, 52);
+
+	for (i = 0; i < 15; i++) {
+		Uart1_Printf("REG %d : %X\n", i, reg_info_app0->registers[i]);
+	}
+	Uart1_Printf("PC : %X\n", reg_info_app0->PC);
+	Uart1_Printf("CPSR : %X\n", reg_info_app0->CPSR);
+	CoSetTTBase((0x44000000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
+	//CoInvalidateMainTlb();
+	CoSetASID(0);
+	Get_Context_And_Switch_1();
+}
+
+void Timer0_ISR(void)
+{
+	static int value = 0;
+	int asid = 0;
+	rTINT_CSTAT |= ((1<<5)|1);
+	GIC_Clear_Pending_Clear(0,69);
+	GIC_Write_EOI(0, 69);
+
+	LED_Display(value);
+	value = (value + 1) % 4;
+	asid = Get_ASID();
+	if (asid == 0) {
+		CoSetTTBase((0x44080000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
+		CoSetASID(1);
+		sel_reg_info = reg_info_app1;
+	}
+	else if (asid == 1) {
+		CoSetTTBase((0x44000000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
+		CoSetASID(0);
+		sel_reg_info = reg_info_app0;
+	}
+	Get_Context_And_Switch();
+}

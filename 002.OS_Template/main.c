@@ -1,4 +1,5 @@
 #include "device_driver.h"
+#include "global.h"
 
 extern WIN_INFO_ST ArrWinInfo[5];
 
@@ -172,22 +173,20 @@ void Main(void)
 		App_Read(SECTOR_APP1, SIZE_APP0, RAM_APP1);
 	}
 #endif
-
+	pcb_init(RAM_APP0, STACK_BASE_APP0, STACK_BASE_APP1);
 	for(;;)
 	{
-		unsigned char x;
+		SetTransTable(RAM_APP0, (RAM_APP0+SIZE_APP0-1), RAM_APP0, RW_WBWA);
+		SetTransTable(STACK_LIMIT_APP0, STACK_BASE_APP1-1, STACK_LIMIT_APP0, RW_WBWA);
 
-		Uart_Printf("\nAPP [1]APP0, [2]APP1 >> ");
-		x = Uart1_Get_Char();
+		CoTTSet_L1L2_app1(); // app1�� VA ���� �ʱ�ȭ
+		SetTransTable_app1(RAM_APP0, (RAM_APP0+SIZE_APP1-1), RAM_APP1, RW_WBWA);
+		SetTransTable_app1(STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, RW_WBWA);
+		CoInvalidateMainTlb();
 
-		if(x == '1')
-		{
-			start_app_0();
-		}
-
-		if(x == '2')
-		{
-			start_app_1();
-		}
+		CoSetASID(0); // App0�� asid 0���� ����
+		Timer0_Int_Delay(1,100);
+		sel_reg_info = reg_info_app0;
+		Run_App(RAM_APP0, STACK_BASE_APP0); // App0���� ���� ����
 	}
 }

@@ -27,16 +27,16 @@ __start:
 	.extern ISR_Vector
 
 HandlerIRQ:
-	push 	{r0-r3, r12, lr}
-    ldr 	r1, =ISR_Vector
-    ldr 	r2, =ICCIAR_CPU0
-    ldr 	r0, [r2]
-    ldr 	r2, =0x3ff
-    and 	r0, r0, r2
-    ldr 	r0, [r1, r0, lsl #2]
-    blx 	r0
-    pop 	{r0-r3, r12, lr}
-    subs 	pc, lr, #4
+    sub     lr,lr,#4
+    stmfd   sp!,{r0-r3, r12, lr}
+    ldr     r1, =ICCIAR_CPU0
+    ldr     r0, [r1]
+    ldr     r1, =0x3FF
+    and     r0, r0, r1
+    ldr     r1, =ISR_Vector
+    ldr     r0, [r1, r0, lsl #2]
+    blx     r0
+    ldmfd   sp!,{r0-r3, r12, pc}^
 
 @--------------------------------------------------
 @ Exception Handler
@@ -56,7 +56,7 @@ HandlerUndef:
 	ldmfd	sp!,{r0-r3, r12, lr}
 	subs	pc, lr, #4
 
-@ ½ÇÇèÀ» À§ÇÏ¿© ¹®Á¦°¡ ¹ß»ýÇÑ ´ÙÀ½ ÁÖ¼Ò·Î º¹±ÍÇÏµµ·Ï ¼öÁ¤ @
+@ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼Ò·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ @
 
 HandlerDabort:
 	stmfd	sp!,{r0-r3, r12, lr}

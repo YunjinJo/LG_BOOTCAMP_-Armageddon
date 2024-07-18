@@ -46,6 +46,14 @@ extern unsigned int Get_SP(void);
 extern unsigned int Main_ID(void);
 extern unsigned int TLB_Type(void);
 extern void Run_App(unsigned int addr, unsigned int stack);
+extern unsigned int Get_CPSR(void);
+extern void context_save(void);
+extern void Get_Context_And_Switch(void);
+
+extern void context_save_1(void);
+extern void Get_Context_And_Switch_1(void);
+
+extern unsigned int Get_ASID(void);
 
 extern void save_context();
 extern void restore_context();

@@ -1,5 +1,20 @@
 #include "Device_Driver.h"
 
+typedef struct{
+	unsigned int a;
+	unsigned int b;
+	unsigned int c;
+	unsigned int d;
+	unsigned int e;
+	unsigned int f;
+}TEST_T;
+
+extern unsigned int call_svc_0(TEST_T input);
+
+TEST_T t1 = {0, 1, 2, 3, 4, 5};
+TEST_T t2 = {6, 7, 8, 9, 10, 11};
+TEST_T t3 = {12, 13, 14, 15, 16, 17};
+
 #define DELAY	8000
 
 void Main(void)
@@ -8,6 +23,7 @@ void Main(void)
 
 	for(;;)
 	{
+		call_svc_0(t1);
 		Uart_Printf("1\n");
 		Delay(DELAY);
 		Uart_Printf("2\n");
@@ -16,6 +32,7 @@ void Main(void)
 		Delay(DELAY);
 		Uart_Printf("4\n");
 		Delay(DELAY);
+		call_svc_0(t2);
 		Uart_Printf("5\n");
 		Delay(DELAY);
 		Uart_Printf("6\n");
@@ -28,6 +45,7 @@ void Main(void)
 		Delay(DELAY);
 		Uart_Printf("10\n");
 		Delay(DELAY);
+		call_svc_0(t3);
 		Uart_Printf("11\n");
 		Delay(DELAY);
 		Uart_Printf("12\n");

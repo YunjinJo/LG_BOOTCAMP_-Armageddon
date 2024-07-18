@@ -109,8 +109,8 @@ void (*ISR_Vector[])(void) =
 		Invalid_ISR,		// 48
 		Invalid_ISR,		// 49
 		Invalid_ISR,		// 50
-		context_save,			// 51
-		context_save_1,			// 52
+		Key3_ISR,			// 51
+		Key4_ISR,			// 52
 		Invalid_ISR,		// 53
 		Invalid_ISR,		// 54
 		Invalid_ISR,		// 55
@@ -269,41 +269,33 @@ void Key4_ISR(void)
 
 void Timer0_ISR(void)
 {
-	int i = 0;
 	static int value = 0;
-	int asid = 0;
 	rTINT_CSTAT |= ((1<<5)|1);
 	GIC_Clear_Pending_Clear(0,69);
 	GIC_Write_EOI(0, 69);
 
+
 	LED_Display(value);
 	value = (value + 1) % 4;
-	asid = Get_ASID();
-//	Uart1_Printf("\n===============\n");
-//	for (i = 0; i < 15; i++) {
-//		Uart1_Printf("REG %d : %X\n", i, reg_info_app0->registers[i]);
-//	}
-//	Uart1_Printf("PC : %X\n", reg_info_app0->PC);
-//	Uart1_Printf("CPSR : %X\n", reg_info_app0->CPSR);
-//
-//	Uart1_Printf("\n===============\n");
-//
-//	for (i = 0; i < 15; i++) {
-//		Uart1_Printf("REG %d : %X\n", i, reg_info_app1->registers[i]);
-//	}
-//	Uart1_Printf("PC : %X\n", reg_info_app1->PC);
-//	Uart1_Printf("CPSR : %X\n", reg_info_app1->CPSR);
-//	Uart1_Printf("\n===============\n");
 
-	if (asid == 0) {
-		CoSetASID(1);
-		CoSetTTBase((0x44080000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
-		sel_reg_info = reg_info_app1;
-	}
-	else if (asid == 1) {
-		CoSetASID(0);
-		CoSetTTBase((0x44000000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
-		sel_reg_info = reg_info_app0;
+	switch (Get_ASID()){
+		case 1:
+		{
+			CoSetTTBase((0x44080000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
+			CoSetASID(2);
+
+			sel_reg_info = reg_info_app1;
+		}
+			break;
+		case 2:
+		{
+			CoSetTTBase((0x44000000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
+			CoSetASID(1);
+
+			sel_reg_info = reg_info_app0;
+		}
+			break;
 	}
 	Get_Context_And_Switch();
+
 }

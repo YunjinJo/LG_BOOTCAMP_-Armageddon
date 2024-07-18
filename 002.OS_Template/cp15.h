@@ -104,8 +104,7 @@ extern void exynos_smc(unsigned int reg, int val1, int val2, int val3);
 // 1's-Level Translation Table Bit Field Definition
 #define RW_WBWA			(NS|USER_RW|DOMAIN0|WBWA|DT_SECTION)
 #define RW_WB			(NS|USER_RW|DOMAIN0|WB|DT_SECTION)
-#define RW_WT			(NS|USER_RW|DOMAIN0|WT|DT_SECTION|NG_ON)
-#define RW_WT_WBWA		(NS|USER_RW|DOMAIN0|WT_WBWA|DT_SECTION|NG_ON)
+#define RW_WT			(NS|USER_RW|DOMAIN0|WT|DT_SECTION)
 #define RW_NCB			(SS|USER_RW|DOMAIN0|NCB|DT_SECTION)
 #define RW_NCNB			(SS|USER_RW|DOMAIN0|NCNB|DT_SECTION)
 #define RW_NO_ACCESS	(SS|USER_RW|DOMAIN1|NCNB|DT_SECTION)

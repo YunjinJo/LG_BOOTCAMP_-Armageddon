@@ -290,7 +290,7 @@ void Timer0_ISR(void)
 	switch (Get_ASID()){
 		case 1:
 		{
-			CoSetTTBase((0x44080000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
+			CoSetTTBase((0x44080000 |(1<<6)|(1<<3)|(0<<1)|(0<<0)));
 			CoSetASID(2);
 
 			sel_reg_info = reg_info_app1;
@@ -298,7 +298,7 @@ void Timer0_ISR(void)
 			break;
 		case 2:
 		{
-			CoSetTTBase((0x44000000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
+			CoSetTTBase((0x44000000 |(1<<6)|(1<<3)|(0<<1)|(0<<0)));
 			CoSetASID(1);
 
 			sel_reg_info = reg_info_app0;

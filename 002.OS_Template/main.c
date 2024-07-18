@@ -26,6 +26,9 @@ extern WIN_INFO_ST ArrWinInfo[5];
 #define 	SECTOR_APP0			100
 #define 	SECTOR_APP1			5000
 
+#define SEL_APP0 1
+#define SEL_APP1 2
+
 #define SECTOR_SIZE 		512
 #define ALIGN_SECTOR(x)	 	((((x+(SECTOR_SIZE-1))&~(SECTOR_SIZE-1))/SECTOR_SIZE))
 
@@ -38,6 +41,31 @@ void App_Read(unsigned int sector, unsigned int size, unsigned int addr)
 		SD_Read_Sector(i, 1,(void *)addr);
 		addr += SECTOR_SIZE;
 	}
+}
+
+void start_app(unsigned int sel_app) {
+	unsigned long long int sel_base_stack = 0;
+	switch(sel_app) {
+		case SEL_APP0:
+		{
+			CoSetASID(1);
+			CoSetTTBase((0x44000000 |(1<<6)|(1<<3)|(0<<1)|(0<<0)));
+			sel_reg_info = reg_info_app0;
+			sel_base_stack = STACK_BASE_APP0;
+		}
+		break;
+		case SEL_APP1:
+		{
+			CoSetASID(2);
+			CoSetTTBase((0x44080000 |(1<<6)|(1<<3)|(0<<1)|(0<<0)));
+			sel_reg_info = reg_info_app1;
+			sel_base_stack = STACK_BASE_APP1;
+		}
+		break;
+	}
+
+	Timer0_Int_Delay(1,1);
+	Run_App(RAM_APP0, sel_base_stack);
 }
 
 void Main(void)
@@ -96,10 +124,7 @@ void Main(void)
 		SetTransTable_app1(RAM_APP0, (RAM_APP0+SIZE_APP1-1), RAM_APP1, RW_WBWA | NG_ON);
 		SetTransTable_app1(STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, RW_WBWA);
 		//CoInvalidateMainTlb();
+		start_app(SEL_APP0); // SEL_APP0 or SEL_APP1
 
-		CoSetASID(1); // App0의 asid 0으로 설정
-		sel_reg_info = reg_info_app0;
-		Timer0_Int_Delay(1,1);
-		Run_App(RAM_APP0, STACK_BASE_APP0); // App0부터 실행 시작
 	}
 }

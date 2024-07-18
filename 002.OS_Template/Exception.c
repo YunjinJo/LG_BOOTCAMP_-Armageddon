@@ -48,7 +48,7 @@ void SVC_Print_Hello(void)
     Uart_Printf("SVC0 Service...\n");
     Uart_Printf("Hello\n");
 }
-
+  
 void * SVC_Handler[] = {
 		(void *) SVC_Print_Hello,
 		(void *) Lcd_Clr_Screen,
@@ -61,6 +61,8 @@ void * SVC_Handler[] = {
 //    Uart_Printf("SVC-Exception @[0x%X]\nMode[0x%X]\n", addr, mode);
 //    Uart_Printf("SVC-ID[%u]\n", Macro_Extract_Area(*(unsigned int *)addr, 0xffffff, 0));
 //}
+
+void * SVC_Handler[] = {(void *) Uart_Printf_SVC};
 
 
 void Invalid_ISR(void);	//__attribute__ ((interrupt ("IRQ")));

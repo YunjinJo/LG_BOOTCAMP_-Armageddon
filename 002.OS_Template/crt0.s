@@ -56,7 +56,7 @@ HandlerUndef:
 	ldmfd	sp!,{r0-r3, r12, lr}
 	subs	pc, lr, #4
 
-@ ½ÇÇèÀ» À§ÇÏ¿© ¹®Á¦°¡ ¹ß»ýÇÑ ´ÙÀ½ ÁÖ¼Ò·Î º¹±ÍÇÏµµ·Ï ¼öÁ¤ @
+@ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼Ò·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ @
 
 HandlerDabort:
 	stmfd	sp!,{r0-r3, r12, lr}
@@ -78,13 +78,12 @@ HandlerPabort:
 	subs	pc, lr, #4
 
 HandlerSVC:
-	@stmfd	sp!,{r0-r3, r12, lr}
-	@sub 	r0, lr, #4
-	@mrs		r1, spsr
-	@and		r1, r1, #0x1f
-	@bl		SVC_Handler
-	@ldmfd	sp!,{r0-r3, r12, pc}^
-
+    @stmfd    sp!,{r0-r3, r12, lr}
+    @sub     r0, lr, #4
+    @mrs        r1, spsr
+    @and        r1, r1, #0x1f
+    @bl        SVC_Handler
+    @ldmfd    sp!,{r0-r3, r12, pc}^
     stmfd sp!, {r4, lr}
     ldr r4, [lr, #-4]
     bic r4,r4,#0xff000000

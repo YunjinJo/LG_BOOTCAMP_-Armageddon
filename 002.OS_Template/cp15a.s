@@ -278,6 +278,12 @@ CoSetASID:
                 MCR     p15,0,r0,c13,c0,1
                 BX     lr
 
+                .global  CoGetASID
+CoGetASID:
+                @/* r0 = base */
+                MRC     p15,0,r0,c13,c0,1
+                BX     lr
+
                 .global  CoSetDomain
 CoSetDomain:
                 @/* r0 = domain */

@@ -55,6 +55,12 @@ extern void Get_Context_And_Switch_1(void);
 
 extern unsigned int Get_ASID(void);
 
+extern void save_context();
+extern void restore_context();
+
+extern unsigned int set_ttbr_app_0();
+extern void set_ttbr_app_1();
+
 //timer
 extern void Timer0_Delay(int mtime);
 extern void Timer0_Int_Delay(int en, int mtime);

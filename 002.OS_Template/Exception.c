@@ -45,7 +45,6 @@ void Pabort_Handler(unsigned int addr, unsigned int mode)
 
 void _Print_Test_SVC(TEST_T input)
 {
-    Uart_Printf("SVC0 Service...\n");
     Uart_Printf("input a : %d\n", input.a);
 	Uart_Printf("input b : %d\n", input.b);
 	Uart_Printf("input c : %d\n", input.c);

@@ -24,7 +24,7 @@ void Dabort_Handler(unsigned int addr, unsigned int mode)
 	Uart_Printf("Reason[0x%X]\nDomain[0x%X]\nRead(0)/Write(1)[%d]\nAXI-Decode(0)/Slave(1)[%d]\n", r, d, w, sd);
 
 #if 0
-	for(;;); /* ½ÇÇèÀ» À§ÇÏ¿© ´ÙÀ½ ÁÖ¼Ò·Î º¹±ÍÇÏµµ·Ï ÇÚµé·¯¸¦ ¼³°è */
+	for(;;); /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼Ò·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½Úµé·¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 #endif
 }
 
@@ -43,13 +43,18 @@ void Pabort_Handler(unsigned int addr, unsigned int mode)
 	for(;;);
 }
 
-void _Print_Test_SVC(void)
+void SVC_Print_Hello(void)
 {
     Uart_Printf("SVC0 Service...\n");
     Uart_Printf("Hello\n");
 }
 
-void * SVC_Handler[] = {(void *)_Print_Test_SVC};
+void * SVC_Handler[] = {
+		(void *) SVC_Print_Hello,
+		(void *) Lcd_Clr_Screen,
+		(void *) Lcd_Draw_BMP,
+		(void *) Uart_Printf,
+};
 
 //void SVC_Handler(unsigned int addr, unsigned int mode)
 //{

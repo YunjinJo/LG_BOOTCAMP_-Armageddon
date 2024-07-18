@@ -36,16 +36,16 @@ void Main(void)
 
 	Lcd_Select_Display_Frame_Buffer(0, 0);
 	Lcd_Select_Draw_Frame_Buffer(0, 0);
-	Lcd_Clr_Screen();
+	SVC_Lcd_Clr_Screen();
 
 	for(;;)
 	{
-		Lcd_Draw_BMP(0,0,img[0]);
+		SVC_Lcd_Draw_BMP(0,0,img[0]);
 		Delay(DELAY);
-		Lcd_Clr_Screen();
+		SVC_Lcd_Clr_Screen();
 
-		Lcd_Draw_BMP(0,0,img[1]);
+		SVC_Lcd_Draw_BMP(0,0,img[1]);
 		Delay(DELAY);
-		Lcd_Clr_Screen();
+		SVC_Lcd_Clr_Screen();
 	}
 }

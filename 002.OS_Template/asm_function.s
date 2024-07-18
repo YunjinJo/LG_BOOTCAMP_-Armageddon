@@ -216,7 +216,6 @@ context_save:
 
 	sub r1, r14, #8
 	pop {r14}
-	sub lr, lr, #4
 	str r14, [r1]
 
 	mrs r0, spsr

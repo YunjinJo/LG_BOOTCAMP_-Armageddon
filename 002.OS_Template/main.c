@@ -26,6 +26,9 @@ extern WIN_INFO_ST ArrWinInfo[5];
 #define 	SECTOR_APP0			100
 #define 	SECTOR_APP1			5000
 
+#define SEL_APP0 1
+#define SEL_APP1 2
+
 #define SECTOR_SIZE 		512
 #define ALIGN_SECTOR(x)	 	((((x+(SECTOR_SIZE-1))&~(SECTOR_SIZE-1))/SECTOR_SIZE))
 
@@ -78,39 +81,29 @@ void App_Read(unsigned int sector, unsigned int size, unsigned int addr)
 	}
 }
 
-void start_app_0()
-{
-	Uart_Printf("\nAPP0 RUN\n", 0);
-//	Uart_Printf("\n==========\n");
-//
-//	init_transtable(TT_APP_0, info_app_0);
-//	init_transtable(TT_APP_0, info_stack_app_0);
-//
-//	Uart_Printf("\n==========\n");
-	CoSetASID(1);
-	Uart_Printf("ASID: %d\n", CoGetASID());
+void start_app(unsigned int sel_app) {
+	unsigned long long int sel_base_stack = 0;
+	switch(sel_app) {
+		case SEL_APP0:
+		{
+			CoSetASID(1);
+			CoSetTTBase((0x44000000 |(1<<6)|(1<<3)|(0<<1)|(0<<0)));
+			sel_reg_info = reg_info_app0;
+			sel_base_stack = STACK_BASE_APP0;
+		}
+		break;
+		case SEL_APP1:
+		{
+			CoSetASID(2);
+			CoSetTTBase((0x44080000 |(1<<6)|(1<<3)|(0<<1)|(0<<0)));
+			sel_reg_info = reg_info_app1;
+			sel_base_stack = STACK_BASE_APP1;
+		}
+		break;
+	}
 
-	Uart_Printf("\n TTBR0 : %X", set_ttbr_app_0());
-	Uart_Printf("ASID: %d\n", CoGetASID());
-
-	Run_App(RAM_APP0, STACK_BASE_APP0);
-}
-
-void start_app_1()
-{
-	Uart_Printf("\nAPP1 RUN\n", 1);
-//	Uart_Printf("\n==========\n");
-//
-//	init_transtable(TT_APP_1, info_app_1);
-//	init_transtable(TT_APP_1, info_stack_app_1);
-//
-//	Uart_Printf("\n==========\n");
-	CoSetASID(2);
-	Uart_Printf("ASID: %d\n", CoGetASID());
-	set_ttbr_app_1();
-	Uart_Printf("ASID: %d\n", CoGetASID());
-
-	Run_App(RAM_APP0, STACK_BASE_APP1);
+	Timer0_Int_Delay(1,1);
+	Run_App(RAM_APP0, sel_base_stack);
 }
 
 void Main(void)
@@ -163,7 +156,7 @@ void Main(void)
 		extern volatile unsigned int sd_insert_flag;
 		SDHC_Init();
 		SDHC_ISR_Enable(1);
-		if(!sd_insert_flag) Uart_Printf("SD!\n");
+		if(!sd_insert_flag) Uart_Printf("SD \n");
 		while(!sd_insert_flag);
 		SDHC_Card_Init();
 
@@ -174,19 +167,15 @@ void Main(void)
 	}
 #endif
 	pcb_init(RAM_APP0, STACK_BASE_APP0, STACK_BASE_APP1);
-	for(;;)
+//	for(;;)
 	{
-		SetTransTable(RAM_APP0, (RAM_APP0+SIZE_APP0-1), RAM_APP0, RW_WBWA);
-		SetTransTable(STACK_LIMIT_APP0, STACK_BASE_APP1-1, STACK_LIMIT_APP0, RW_WBWA);
+		SetTransTable(RAM_APP0, (RAM_APP0+SIZE_APP0-1), RAM_APP0, RW_WBWA | NG_ON);
+		SetTransTable(STACK_LIMIT_APP0, STACK_BASE_APP0-1, STACK_LIMIT_APP0, RW_WBWA);
 
-		CoTTSet_L1L2_app1(); // app1�� VA ���� �ʱ�ȭ
-		SetTransTable_app1(RAM_APP0, (RAM_APP0+SIZE_APP1-1), RAM_APP1, RW_WBWA);
+		CoTTSet_L1L2_app1();
+		SetTransTable_app1(RAM_APP0, (RAM_APP0+SIZE_APP1-1), RAM_APP1, RW_WBWA | NG_ON);
 		SetTransTable_app1(STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, RW_WBWA);
-		CoInvalidateMainTlb();
-
-		CoSetASID(0); // App0�� asid 0���� ����
-		Timer0_Int_Delay(1,100);
-		sel_reg_info = reg_info_app0;
-		Run_App(RAM_APP0, STACK_BASE_APP0); // App0���� ���� ����
+		//CoInvalidateMainTlb();
+		start_app(SEL_APP0); // SEL_APP0 or SEL_APP1
 	}
 }

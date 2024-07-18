@@ -43,11 +43,20 @@ void Pabort_Handler(unsigned int addr, unsigned int mode)
 	for(;;);
 }
 
-void SVC_Handler(unsigned int addr, unsigned int mode)
+void _Print_Test_SVC(void)
 {
-	Uart_Printf("SVC-Exception @[0x%X]\nMode[0x%X]\n", addr, mode);
-	Uart_Printf("SVC-ID[%u]\n", Macro_Extract_Area(*(unsigned int *)addr, 0xffffff, 0));
+    Uart_Printf("SVC0 Service...\n");
+    Uart_Printf("Hello\n");
 }
+
+void * SVC_Handler[] = {(void *)_Print_Test_SVC};
+
+//void SVC_Handler(unsigned int addr, unsigned int mode)
+//{
+//    Uart_Printf("SVC-Exception @[0x%X]\nMode[0x%X]\n", addr, mode);
+//    Uart_Printf("SVC-ID[%u]\n", Macro_Extract_Area(*(unsigned int *)addr, 0xffffff, 0));
+//}
+
 
 void Invalid_ISR(void);	//__attribute__ ((interrupt ("IRQ")));
 void Uart1_ISR(void);	//__attribute__ ((interrupt ("IRQ")));
@@ -109,8 +118,8 @@ void (*ISR_Vector[])(void) =
 		Invalid_ISR,		// 48
 		Invalid_ISR,		// 49
 		Invalid_ISR,		// 50
-		context_save,			// 51
-		context_save_1,			// 52
+		Key3_ISR,			// 51
+		Key4_ISR,			// 52
 		Invalid_ISR,		// 53
 		Invalid_ISR,		// 54
 		Invalid_ISR,		// 55
@@ -270,23 +279,32 @@ void Key4_ISR(void)
 void Timer0_ISR(void)
 {
 	static int value = 0;
-	int asid = 0;
 	rTINT_CSTAT |= ((1<<5)|1);
 	GIC_Clear_Pending_Clear(0,69);
 	GIC_Write_EOI(0, 69);
 
+
 	LED_Display(value);
 	value = (value + 1) % 4;
-	asid = Get_ASID();
-	if (asid == 0) {
-		CoSetTTBase((0x44080000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
-		CoSetASID(1);
-		sel_reg_info = reg_info_app1;
-	}
-	else if (asid == 1) {
-		CoSetTTBase((0x44000000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
-		CoSetASID(0);
-		sel_reg_info = reg_info_app0;
+
+	switch (Get_ASID()){
+		case 1:
+		{
+			CoSetTTBase((0x44080000 |(1<<6)|(1<<3)|(0<<1)|(0<<0)));
+			CoSetASID(2);
+
+			sel_reg_info = reg_info_app1;
+		}
+			break;
+		case 2:
+		{
+			CoSetTTBase((0x44000000 |(1<<6)|(1<<3)|(0<<1)|(0<<0)));
+			CoSetASID(1);
+
+			sel_reg_info = reg_info_app0;
+		}
+			break;
 	}
 	Get_Context_And_Switch();
+
 }

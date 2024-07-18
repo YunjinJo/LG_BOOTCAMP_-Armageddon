@@ -16,7 +16,9 @@
 extern void Delay(unsigned int v);
 
 //uart.c
-#define Uart_Printf		Uart1_Printf
+//#define Uart_Printf		Uart1_Printf
+extern void Uart_Printf(const char *fmt);
+
 extern void Uart1_Send_Byte(char data);
 extern void Uart1_Send_String(const char *pt);
 extern void Uart1_Printf(const char *fmt,...);

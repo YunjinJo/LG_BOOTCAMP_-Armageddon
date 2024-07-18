@@ -19,7 +19,7 @@ const unsigned short * img[]={image0, img101};
 
 void Main(void)
 {
-	Uart_Printf(">>APP0 => LCD Display\n");
+	SVC_Uart_Printf(">>APP0 => LCD Display\n");
 
 	ArrWinInfo[0].bpp_mode = BPPMODE_16BPP_565;
 	ArrWinInfo[0].bytes_per_pixel = 2;
@@ -36,16 +36,18 @@ void Main(void)
 
 	Lcd_Select_Display_Frame_Buffer(0, 0);
 	Lcd_Select_Draw_Frame_Buffer(0, 0);
-	Lcd_Clr_Screen();
+	SVC_Lcd_Clr_Screen();
+
+	SVC_Print_Hello();
 
 	for(;;)
 	{
-		Lcd_Draw_BMP(0,0,img[0]);
+		SVC_Lcd_Draw_BMP(0,0,img[0]);
 		Delay(DELAY);
-		Lcd_Clr_Screen();
+		SVC_Lcd_Clr_Screen();
 
-		Lcd_Draw_BMP(0,0,img[1]);
+		SVC_Lcd_Draw_BMP(0,0,img[1]);
 		Delay(DELAY);
-		Lcd_Clr_Screen();
+		SVC_Lcd_Clr_Screen();
 	}
 }

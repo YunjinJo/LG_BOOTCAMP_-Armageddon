@@ -59,6 +59,11 @@ typedef struct {
 #define WIDTH		(1024)
 #define HEIGHT		(600)
 
+extern void SVC_Print_Hello(void);
+extern void SVC_Lcd_Clr_Screen(void);
+extern void SVC_Lcd_Draw_BMP(int x, int y, const unsigned short int *fp);
+extern void SVC_Uart_Printf(const char *fmt,...);
+
 extern void	Lcd_Init(void);
 extern void Lcd_Win_Init(int id,int en);
 extern void Lcd_Put_Pixel(int x,int y, unsigned short color);

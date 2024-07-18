@@ -14,4 +14,13 @@ typedef struct {
 	unsigned int registers[15]; // r0-r14
 }REG_INFO;
 
+typedef struct{
+	unsigned int a;
+	unsigned int b;
+	unsigned int c;
+	unsigned int d;
+	unsigned int e;
+	unsigned int f;
+}TEST_T;
+
 #endif /* TYPE_DEFINE_H_ */

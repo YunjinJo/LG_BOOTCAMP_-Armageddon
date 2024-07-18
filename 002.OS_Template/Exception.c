@@ -24,7 +24,7 @@ void Dabort_Handler(unsigned int addr, unsigned int mode)
 	Uart_Printf("Reason[0x%X]\nDomain[0x%X]\nRead(0)/Write(1)[%d]\nAXI-Decode(0)/Slave(1)[%d]\n", r, d, w, sd);
 
 #if 0
-	for(;;); /* ½ÇÇèÀ» À§ÇÏ¿© ´ÙÀ½ ÁÖ¼Ò·Î º¹±ÍÇÏµµ·Ï ÇÚµé·¯¸¦ ¼³°è */
+	for(;;); /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼Ò·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½Úµé·¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ */
 #endif
 }
 
@@ -43,13 +43,24 @@ void Pabort_Handler(unsigned int addr, unsigned int mode)
 	for(;;);
 }
 
-void _Print_Test_SVC(void)
+void _Print_Test_SVC(TEST_T input)
 {
     Uart_Printf("SVC0 Service...\n");
+    Uart_Printf("input a : %d\n", input.a);
+	Uart_Printf("input b : %d\n", input.b);
+	Uart_Printf("input c : %d\n", input.c);
+	Uart_Printf("input d : %d\n", input.d);
+	Uart_Printf("input e : %d\n", input.e);
+	Uart_Printf("input f : %d\n", input.f);
+}
+
+void _Print_Test_SVC_1(void)
+{
+    Uart_Printf("SVC1 Service...\n");
     Uart_Printf("Hello\n");
 }
 
-void * SVC_Handler[] = {(void *)_Print_Test_SVC};
+void * SVC_Handler[] = {print_test, _Print_Test_SVC_1};
 
 //void SVC_Handler(unsigned int addr, unsigned int mode)
 //{
@@ -273,7 +284,6 @@ void Key4_ISR(void)
 	CoSetTTBase((0x44000000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
 	//CoInvalidateMainTlb();
 	CoSetASID(0);
-	Get_Context_And_Switch_1();
 }
 
 void Timer0_ISR(void)

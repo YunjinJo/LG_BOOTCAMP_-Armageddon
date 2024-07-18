@@ -2,6 +2,7 @@
 #include "macro.h"
 #include "option.h"
 #include "cp15.h"
+#include "global.h"
 
 #include <malloc.h>
 #include <stdarg.h>
@@ -50,10 +51,10 @@ extern unsigned int Get_CPSR(void);
 extern void context_save(void);
 extern void Get_Context_And_Switch(void);
 
-extern void context_save_1(void);
-extern void Get_Context_And_Switch_1(void);
-
 extern unsigned int Get_ASID(void);
+
+extern unsigned int print_test();
+extern void _Print_Test_SVC(TEST_T input);
 
 //timer
 extern void Timer0_Delay(int mtime);

@@ -182,7 +182,7 @@ void set_second_table_address_App0(void)
 {
 	unsigned int* pTT;
 
-	pTT = (unsigned int *) 0x44001104; // ½ÃÀÛ ÁÖ¼Ò
+	pTT = (unsigned int *) 0x44001104; // ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼ï¿½
 	*pTT++ = 0x44040000 | 0x1; //0x44001104
 	*pTT++ = 0x44040400 | 0x1;//0x440011080
 	*pTT++ = 0x44040800| 0x1;//0x4400110c
@@ -192,7 +192,7 @@ void set_second_table_address_App1(void)
 {
 	unsigned int* pTT;
 
-	pTT = (unsigned int *) 0x44081104; // ½ÃÀÛ ÁÖ¼Ò
+	pTT = (unsigned int *) 0x44081104; // ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼ï¿½
 	*pTT++ = 0x440c0000 | 0x1; //0x44081104
 	*pTT++ = 0x440c0400 | 0x1;//0x44081108
 	*pTT++ = 0x440c0800| 0x1;//0x4408110c
@@ -206,29 +206,29 @@ void init_second_table_descriptor_App0(void)
 	pTT = (unsigned int *) SND_PAGE_TABLE_BASE_APP0; //section1
 	for (i=0; i<256; i++)
 	{
-		//*pTT++ = 0x2 | WT; //WT ¼³Á¤
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ¼³Á¤
+		//*pTT++ = 0x2 | WT; //WT ï¿½ï¿½ï¿½ï¿½
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ï¿½ï¿½ï¿½ï¿½
 	}
 
 	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP0 + 0x400) ; //section2
 	for (i=0; i<256; i++)
 	{
 		//*pTT++ = 0x2 | WT;
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ¼³Á¤
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ï¿½ï¿½ï¿½ï¿½
 	}
 
 	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP0 + 0x800); //section3
 	for (i=0; i<256; i++)
 	{
 		//*pTT++ = 0x2 | WT;
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ¼³Á¤
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ï¿½ï¿½ï¿½ï¿½
 	}
 
 	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP0 + 0xc00); //section4
 	for (i=0; i<256; i++)
 	{
 		//*pTT++ = 0x2 | WT;
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ¼³Á¤
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ï¿½ï¿½ï¿½ï¿½
 	}
 }
 
@@ -241,28 +241,28 @@ void init_second_table_descriptor_App1(void)
 	for (i=0; i<256; i++)
 	{
 		//*pTT++ = 0x2 | WT;
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ¼³Á¤
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ï¿½ï¿½ï¿½ï¿½
 	}
 
 	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP1 + 0x400); //section2
 	for (i=0; i<256; i++)
 	{
 		//*pTT++ = 0x2 | WT;
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ¼³Á¤
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ï¿½ï¿½ï¿½ï¿½
 	}
 
 	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP1 + 0x800); //section3
 	for (i=0; i<256; i++)
 	{
 		//*pTT++ = 0x2 | WT;
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ¼³Á¤
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ï¿½ï¿½ï¿½ï¿½
 	}
 
 	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP1 + 0xc00); //section4
 	for (i=0; i<256; i++)
 	{
 		//*pTT++ = 0x2 | WT;
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ¼³Á¤
+		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ï¿½ï¿½ï¿½ï¿½
 	}
 }
 

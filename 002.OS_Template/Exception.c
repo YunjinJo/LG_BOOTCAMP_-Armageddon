@@ -43,19 +43,18 @@ void Pabort_Handler(unsigned int addr, unsigned int mode)
 	for(;;);
 }
 
-void _Print_Test_SVC(void)
+void Uart_Printf_SVC(char * fmt)
 {
-    Uart_Printf("SVC0 Service...\n");
-    Uart_Printf("Hello\n");
+    Uart_Printf(fmt);
 }
-
-void * SVC_Handler[] = {(void *)_Print_Test_SVC};
 
 //void SVC_Handler(unsigned int addr, unsigned int mode)
 //{
 //    Uart_Printf("SVC-Exception @[0x%X]\nMode[0x%X]\n", addr, mode);
 //    Uart_Printf("SVC-ID[%u]\n", Macro_Extract_Area(*(unsigned int *)addr, 0xffffff, 0));
 //}
+
+void * SVC_Handler[] = {(void *) Uart_Printf_SVC};
 
 
 void Invalid_ISR(void);	//__attribute__ ((interrupt ("IRQ")));

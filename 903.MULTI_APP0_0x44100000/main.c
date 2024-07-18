@@ -2,6 +2,7 @@
 
 #include ".\images\image0.h"
 #include ".\images\img101.h"
+#include ".\images\airplane.h"
 
 extern WIN_INFO_ST ArrWinInfo[5];
 
@@ -15,7 +16,7 @@ extern WIN_INFO_ST ArrWinInfo[5];
 
 #define DELAY	8000
 
-const unsigned short * img[]={image0, img101};
+const unsigned short * img[]={image0, img101, airplane};
 
 void Main(void)
 {
@@ -47,6 +48,10 @@ void Main(void)
 		SVC_Lcd_Clr_Screen();
 
 		SVC_Lcd_Draw_BMP(0,0,img[1]);
+		Delay(DELAY);
+		SVC_Lcd_Clr_Screen();
+
+		Lcd_Draw_BMP(0,0,img[2]);
 		Delay(DELAY);
 		SVC_Lcd_Clr_Screen();
 	}

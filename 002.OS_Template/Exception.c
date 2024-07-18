@@ -269,6 +269,7 @@ void Key4_ISR(void)
 
 void Timer0_ISR(void)
 {
+	int i = 0;
 	static int value = 0;
 	int asid = 0;
 	rTINT_CSTAT |= ((1<<5)|1);
@@ -278,14 +279,30 @@ void Timer0_ISR(void)
 	LED_Display(value);
 	value = (value + 1) % 4;
 	asid = Get_ASID();
+//	Uart1_Printf("\n===============\n");
+//	for (i = 0; i < 15; i++) {
+//		Uart1_Printf("REG %d : %X\n", i, reg_info_app0->registers[i]);
+//	}
+//	Uart1_Printf("PC : %X\n", reg_info_app0->PC);
+//	Uart1_Printf("CPSR : %X\n", reg_info_app0->CPSR);
+//
+//	Uart1_Printf("\n===============\n");
+//
+//	for (i = 0; i < 15; i++) {
+//		Uart1_Printf("REG %d : %X\n", i, reg_info_app1->registers[i]);
+//	}
+//	Uart1_Printf("PC : %X\n", reg_info_app1->PC);
+//	Uart1_Printf("CPSR : %X\n", reg_info_app1->CPSR);
+//	Uart1_Printf("\n===============\n");
+
 	if (asid == 0) {
-		CoSetTTBase((0x44080000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
 		CoSetASID(1);
+		CoSetTTBase((0x44080000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
 		sel_reg_info = reg_info_app1;
 	}
 	else if (asid == 1) {
-		CoSetTTBase((0x44000000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
 		CoSetASID(0);
+		CoSetTTBase((0x44000000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
 		sel_reg_info = reg_info_app0;
 	}
 	Get_Context_And_Switch();

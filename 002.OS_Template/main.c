@@ -89,16 +89,16 @@ void Main(void)
 	pcb_init(RAM_APP0, STACK_BASE_APP0, STACK_BASE_APP1);
 	for(;;)
 	{
-		SetTransTable(RAM_APP0, (RAM_APP0+SIZE_APP0-1), RAM_APP0, RW_WBWA);
-		SetTransTable(STACK_LIMIT_APP0, STACK_BASE_APP1-1, STACK_LIMIT_APP0, RW_WBWA);
+		SetTransTable(RAM_APP0, (RAM_APP0+SIZE_APP0-1), RAM_APP0, RW_WBWA | NG_ON);
+		SetTransTable(STACK_LIMIT_APP0, STACK_BASE_APP0-1, STACK_LIMIT_APP0, RW_WBWA | NG_ON);
 
 		CoTTSet_L1L2_app1(); // app1의 VA 영역 초기화
-		SetTransTable_app1(RAM_APP0, (RAM_APP0+SIZE_APP1-1), RAM_APP1, RW_WBWA);
-		SetTransTable_app1(STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, RW_WBWA);
+		SetTransTable_app1(RAM_APP0, (RAM_APP0+SIZE_APP1-1), RAM_APP1, RW_WBWA | NG_ON);
+		SetTransTable_app1(STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, RW_WBWA | NG_ON);
 		CoInvalidateMainTlb();
 
 		CoSetASID(0); // App0의 asid 0으로 설정
-		Timer0_Int_Delay(1,100);
+		Timer0_Int_Delay(1,1000);
 		sel_reg_info = reg_info_app0;
 		Run_App(RAM_APP0, STACK_BASE_APP0); // App0부터 실행 시작
 	}

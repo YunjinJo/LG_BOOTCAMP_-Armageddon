@@ -1,1 +1,7 @@
 .metadata/
+*.o
+*.bin
+*.elf
+*.map
+*.cproject
+*.txt

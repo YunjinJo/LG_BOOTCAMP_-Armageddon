@@ -1,4 +1,5 @@
 #include "device_driver.h"
+#include "global.h"
 
 extern WIN_INFO_ST ArrWinInfo[5];
 
@@ -44,7 +45,8 @@ void Main(void)
 	CoInitMmuAndL1L2Cache();
 	Uart_Init(115200);
 	LED_Init();
-	Key_Poll_Init();
+	Key_ISR_Init();
+	Key_ISR_Enable(1);
 
 	Uart_Printf("\nOS Template\n");
 
@@ -84,30 +86,20 @@ void Main(void)
 		App_Read(SECTOR_APP1, SIZE_APP0, RAM_APP1);
 	}
 #endif
-
-	for(;;)
+	pcb_init(RAM_APP0, STACK_BASE_APP0, STACK_BASE_APP1);
+//	for(;;)
 	{
-		unsigned char x;
+		SetTransTable(RAM_APP0, (RAM_APP0+SIZE_APP0-1), RAM_APP0, RW_WBWA | NG_ON);
+		SetTransTable(STACK_LIMIT_APP0, STACK_BASE_APP0-1, STACK_LIMIT_APP0, RW_WBWA);
 
-		Uart_Printf("\n실행할 APP을 선택하시오 [1]APP0, [2]APP1 >> ");
-		x = Uart1_Get_Char();
+		CoTTSet_L1L2_app1(); // app1의 VA 영역 초기화
+		SetTransTable_app1(RAM_APP0, (RAM_APP0+SIZE_APP1-1), RAM_APP1, RW_WBWA | NG_ON);
+		SetTransTable_app1(STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, RW_WBWA);
+		//CoInvalidateMainTlb();
 
-		if(x == '1')
-		{
-			Uart_Printf("\nAPP0 RUN\n", x);
-			SetTransTable(RAM_APP0, (RAM_APP0+SIZE_APP0-1), RAM_APP0, RW_WBWA);
-			SetTransTable(STACK_LIMIT_APP0, STACK_BASE_APP1-1, STACK_LIMIT_APP0, RW_WBWA);
-			CoInvalidateMainTlb();
-			Run_App(RAM_APP0, STACK_BASE_APP0);
-		}
-
-		if(x == '2')
-		{
-			Uart_Printf("\nAPP1 RUN\n", x);
-			SetTransTable(RAM_APP0, (RAM_APP0+SIZE_APP1-1), RAM_APP1, RW_WBWA);
-			SetTransTable(STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, RW_WBWA);
-			CoInvalidateMainTlb();
-			Run_App(RAM_APP0, STACK_BASE_APP1);
-		}
+		CoSetASID(1); // App0의 asid 0으로 설정
+		sel_reg_info = reg_info_app0;
+		Timer0_Int_Delay(1,1);
+		Run_App(RAM_APP0, STACK_BASE_APP0); // App0부터 실행 시작
 	}
 }

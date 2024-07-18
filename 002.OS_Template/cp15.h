@@ -75,6 +75,10 @@ extern void exynos_smc(unsigned int reg, int val1, int val2, int val3);
 #define WT			(0x2<<2)		/* Write-Through Cached <=> Buffered(ARMv7 : Outer and Inner WT, No Write-Allocate) */
 #define WB			(0x3<<2)		/* Write-Back Cached <=> Buffered(ARMv7 : Outer and Inner WB, No Write-Allocate) */
 #define WBWA		((0x1<<12)|(0x3<<2))
+#define WT_WBWA		((0x5<<12)|(0x1<<3)|(0x0<<2)) //inner cache (L1) is WT, outer cache (L2) is WA
+#define WT_WBWA_PAGE ((0x5<<6)|(0x1<<3)|(0x0<<2))
+// nG bit for cache
+#define NG_ON			(0x1<<17)
 
 // Access Permission Bits Definition(When AP[2]=0 in ARMv7)
 #define ALL_NO_ACCESS	(0<<10)	/* Previleged:No, User:No */
@@ -194,7 +198,12 @@ void CoLockL2Cache(unsigned int uWayNum);
 void CoUnLockL2Cache(unsigned int uWayNum);
 void CoSetExceptonVectoerBase(unsigned int uBaseAddr);
 void SetTransTable(unsigned int uVaStart, unsigned int uVaEnd, unsigned int uPaStart, unsigned int attr);
-
+void SetTransTable_app1(unsigned int uVaStart, unsigned int uVaEnd, unsigned int uPaStart, unsigned int attr);
+void CoTTSet_L1L2_app1(void);
+void set_second_table_address_App0(void);
+void init_second_table_descriptor_App0(void);
+void set_second_table_address_App1(void);
+void init_second_table_descriptor_App1(void);
 /* PA conversion */
 
 extern unsigned int CoGetOSReadPA(unsigned int va);

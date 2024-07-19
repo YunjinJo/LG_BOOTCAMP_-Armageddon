@@ -43,30 +43,15 @@ void Pabort_Handler(unsigned int addr, unsigned int mode)
 	for(;;);
 }
 
-void _Print_Test_SVC(TEST_T input)
-{
-    Uart_Printf("input a : %d\n", input.a);
-	Uart_Printf("input b : %d\n", input.b);
-	Uart_Printf("input c : %d\n", input.c);
-	Uart_Printf("input d : %d\n", input.d);
-	Uart_Printf("input e : %d\n", input.e);
-	Uart_Printf("input f : %d\n", input.f);
-}
-
-void SVC_Print_Hello(void)
-{
-    Uart_Printf("SVC0 Service...\n");
-    Uart_Printf("Hello\n");
-}
-
-
-
 void * SVC_Handler[] = {
-	(void *) _Print_Test_SVC, 
-	(void *) SVC_Print_Hello,
 	(void *) Lcd_Clr_Screen,
 	(void *) Lcd_Draw_BMP,
 	(void *) Uart_Printf,
+	(void *) Lcd_Init,
+	(void *) Lcd_Win_Init,
+	(void *) Lcd_Brightness_Control,
+	(void *) Lcd_Select_Display_Frame_Buffer,
+	(void *) Lcd_Select_Draw_Frame_Buffer
 	};
 
 //void SVC_Handler(unsigned int addr, unsigned int mode)

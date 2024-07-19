@@ -166,21 +166,21 @@ Get_Context_And_Switch:
 
 	.extern _Print_Test_SVC
 	.global print_test
-print_test:
-	push {r4, r5, r6, lr}
+@print_test:
+	@push {r4, r5, r6, lr}
 	@ 사용자 모드의 스택 포인터를 가져오기 위해 모드 전환
-    mrs r4, cpsr          @ 현재 프로그램 상태 레지스터를 r0에 저장
-    bic r5, r4, #0x1F     @ 모드 비트를 클리어
-    orr r5, r5, #0x1f     @ SYS 모드로 설정
-    msr cpsr_cxsf, r5        @ SYS 모드로 전환
-    mov r6, sp            @ 사용자 모드의 스택 포인터를 r2에 저장
-    msr cpsr_cxsf, r4        @ 원래 모드로 복귀
+    @mrs r4, cpsr          @ 현재 프로그램 상태 레지스터를 r0에 저장
+    @bic r5, r4, #0x1F     @ 모드 비트를 클리어
+    @orr r5, r5, #0x1f     @ SYS 모드로 설정
+    @msr cpsr_cxsf, r5        @ SYS 모드로 전환
+    @mov r6, sp            @ 사용자 모드의 스택 포인터를 r2에 저장
+    @msr cpsr_cxsf, r4        @ 원래 모드로 복귀
 
     @ SYS 모드의 스택에서 구조체 데이터를 불러오기
-    ldm r6, {r4, r5}  @ stack에서 불러오기
-	push {r4, r5}
-	bl _Print_Test_SVC
-	add sp, sp, #8
-	pop {r4, r5, r6, pc}
+    @ldm r6, {r4, r5}  @ stack에서 불러오기
+	@push {r4, r5}
+	@bl _Print_Test_SVC
+	@add sp, sp, #8
+	@pop {r4, r5, r6, pc}
 
 .end

@@ -91,14 +91,12 @@ HandlerSVC:
     ldr r12, =SVC_Handler
     ldr lr, [r12, r4, lsl #2]
 
-	push {r0, r1, r2}
+	push {r0}
 	mrs r0, cpsr
-	bic r1, r0, #0x1f
-	orr r1, r1, #0x1f
-	msr cpsr_cxsf, r1
+	cps #0x1f
 	mov r4, sp @ SYS 모드 sp 가져옴 
 	msr cpsr_cxsf, r0
-	pop {r0, r1, r2}
+	pop {r0}
 
 	mov r5, sp @ sp 백업
 	mov sp, r4 @ 현재 sp를 SYS모드 sp로 변경

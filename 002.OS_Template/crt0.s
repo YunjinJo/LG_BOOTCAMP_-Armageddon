@@ -56,22 +56,37 @@ HandlerUndef:
 	ldmfd	sp!,{r0-r3, r12, lr}
 	subs	pc, lr, #4
 
-@ ������ ���Ͽ� ������ �߻��� ���� �ּҷ� �����ϵ��� ���� @
-
+	.extern demand_paging
 HandlerDabort:
 	stmfd	sp!,{r0-r3, r12, lr}
+
+	mrc 	p15, 0, r0, c5, c0, 0  @ save dfsr
+	ldr		r1, =0x140f
+	and		r0, r0, r1
+	cmp		r0, #0xf  @ check page fault
+	beq		1f
+
 	sub 	r0, lr, #8
 	mrs		r1, spsr
 	and		r1, r1, #0x1f
 	bl		Dabort_Handler
 	ldmfd	sp!,{r0-r3, r12, lr}
-	@subs	pc, lr, #8
 	subs	pc, lr, #4
+
+1:
+	mrc		p15, 0, r0, c6, c0, 0 @ save fault_addr
+	blx		demand_paging
+	ldmfd	sp!, {r0-r3, r12, lr}
+	subs	pc, lr, #4	@ return
+
 
 HandlerPabort:
 	stmfd	sp!,{r0-r3, r12, lr}
-	mrc p15, 0, r0, c5, c0, 1 @ P ABT 발생 원인 IFSR 저장
-	
+	mrc p15, 0, r0, c5, c0, 1 @ save ifsr
+	ldr	r1, =0x140f
+	and	r0, r0, r1
+	cmp	r0, #0xf  @ check page fault
+	beq		2f
 
 	@ 기존 P ABT
 	sub 	r0, lr, #4
@@ -81,14 +96,13 @@ HandlerPabort:
 	ldmfd	sp!,{r0-r3, r12, lr}
 	subs	pc, lr, #4
 
-HandlerSVC:
-	@stmfd	sp!,{r0-r3, r12, lr}
-	@sub 	r0, lr, #4
-	@mrs		r1, spsr
-	@and		r1, r1, #0x1f
-	@bl		SVC_Handler
-	@ldmfd	sp!,{r0-r3, r12, pc}^
+2:
+	mrc	p15, 0, r0, c6, c0, 2 @ save fault_addr
+	blx	demand_paging
+	ldmfd sp!, {r0-r3, r12, lr}
+	subs pc, lr, #4	@ return
 
+HandlerSVC:
     stmfd sp!, {r4, r5, lr}
     ldr r4, [lr, #-4]
     bic r4,r4,#0xff000000

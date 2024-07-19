@@ -64,7 +64,8 @@ void start_app(unsigned int sel_app) {
 		break;
 	}
 
-	Timer0_Int_Delay(1,1);
+	//Timer0_Int_Delay(1,1);
+	Uart_Printf("\nRUN APP!!!\n");
 	Run_App(RAM_APP0, sel_base_stack);
 }
 

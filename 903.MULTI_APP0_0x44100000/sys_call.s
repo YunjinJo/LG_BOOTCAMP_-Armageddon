@@ -43,4 +43,14 @@ SVC_Lcd_Select_Draw_Frame_Buffer:
 	svc 	7
 	bx 		lr
 
+	.global SVC_Lcd_Draw_Back_Color
+SVC_Lcd_Draw_Back_Color:
+	svc		8
+	bx		lr
+
+	.global SVC_Lcd_Draw_Line
+SVC_Lcd_Draw_Line:
+	svc		9
+	bx		lr
+
 

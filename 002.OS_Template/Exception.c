@@ -51,7 +51,9 @@ void * SVC_Handler[] = {
 	(void *) Lcd_Win_Init,
 	(void *) Lcd_Brightness_Control,
 	(void *) Lcd_Select_Display_Frame_Buffer,
-	(void *) Lcd_Select_Draw_Frame_Buffer
+	(void *) Lcd_Select_Draw_Frame_Buffer,
+	(void *) Lcd_Draw_Back_Color,
+	(void *) Lcd_Draw_Line
 	};
 
 //void SVC_Handler(unsigned int addr, unsigned int mode)

@@ -8,6 +8,8 @@
 #ifndef TYPE_DEFINE_H_
 #define TYPE_DEFINE_H_
 
+#define NULL ((void *)0)
+
 typedef struct {
 	unsigned int PC;
 	unsigned int CPSR;
@@ -22,5 +24,7 @@ typedef struct{
 	unsigned int e;
 	unsigned int f;
 }TEST_T;
+
+
 
 #endif /* TYPE_DEFINE_H_ */

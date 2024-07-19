@@ -53,8 +53,7 @@ extern void Get_Context_And_Switch(void);
 
 extern unsigned int Get_ASID(void);
 
-extern unsigned int print_test();
-extern void _Print_Test_SVC(TEST_T input);
+extern void call_isb(void);
 
 //timer
 extern void Timer0_Delay(int mtime);

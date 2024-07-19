@@ -4,7 +4,6 @@
 #include ".\images\img101.h"
 #include ".\images\airplane.h"
 
-extern WIN_INFO_ST ArrWinInfo[5];
 
 #define BLACK	0x0000
 #define WHITE	0xffff
@@ -22,24 +21,22 @@ void Main(void)
 {
 	SVC_Uart_Printf(">>APP0 => LCD Display\n");
 
-	ArrWinInfo[0].bpp_mode = BPPMODE_16BPP_565;
-	ArrWinInfo[0].bytes_per_pixel = 2;
-	ArrWinInfo[0].p_sizex = 1024;
-	ArrWinInfo[0].p_sizey = 600;
-	ArrWinInfo[0].v_sizex = 1024;
-	ArrWinInfo[0].v_sizey = 600;
-	ArrWinInfo[0].posx = (1024 - ArrWinInfo[0].p_sizex) / 2;
-	ArrWinInfo[0].posy = (600 - ArrWinInfo[0].p_sizey) / 2;
+	//ArrWinInfo[0].bpp_mode = BPPMODE_16BPP_565;
+	//ArrWinInfo[0].bytes_per_pixel = 2;
+	//ArrWinInfo[0].p_sizex = 1024;
+	//ArrWinInfo[0].p_sizey = 600;
+	//ArrWinInfo[0].v_sizex = 1024;
+	//ArrWinInfo[0].v_sizey = 600;
+	//ArrWinInfo[0].posx = (1024 - ArrWinInfo[0].p_sizex) / 2;
+	//ArrWinInfo[0].posy = (600 - ArrWinInfo[0].p_sizey) / 2;
 
-	Lcd_Init();
-	Lcd_Win_Init(0, 1);
-	Lcd_Brightness_Control(8);
+	SVC_Lcd_Init();
+	SVC_Lcd_Win_Init(0, 1);
+	SVC_Lcd_Brightness_Control(8);
 
-	Lcd_Select_Display_Frame_Buffer(0, 0);
-	Lcd_Select_Draw_Frame_Buffer(0, 0);
+	SVC_Lcd_Select_Display_Frame_Buffer(0, 0);
+	SVC_Lcd_Select_Draw_Frame_Buffer(0, 0);
 	SVC_Lcd_Clr_Screen();
-
-	SVC_Print_Hello();
 
 	for(;;)
 	{
@@ -51,7 +48,7 @@ void Main(void)
 		Delay(DELAY);
 		SVC_Lcd_Clr_Screen();
 
-		Lcd_Draw_BMP(0,0,img[2]);
+		SVC_Lcd_Draw_BMP(0,0,img[2]);
 		Delay(DELAY);
 		SVC_Lcd_Clr_Screen();
 	}

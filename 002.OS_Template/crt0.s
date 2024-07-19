@@ -70,6 +70,10 @@ HandlerDabort:
 
 HandlerPabort:
 	stmfd	sp!,{r0-r3, r12, lr}
+	mrc p15, 0, r0, c5, c0, 1 @ P ABT 발생 원인 IFSR 저장
+	
+
+	@ 기존 P ABT
 	sub 	r0, lr, #4
 	mrs		r1, spsr
 	and		r1, r1, #0x1f

@@ -178,94 +178,41 @@ void SetTransTable_app1(unsigned int uVaStart, unsigned int uVaEnd, unsigned int
 	}
 }
 
-void set_second_table_address_App0(void)
+void set_second_table_address_App0(unsigned int uVaStart)
 {
 	unsigned int* pTT;
 
-	pTT = (unsigned int *) 0x44001104; // ���� �ּ�
-	*pTT++ = 0x44040000 | 0x1; //0x44001104
-	*pTT++ = 0x44040400 | 0x1;//0x440011080
-	*pTT++ = 0x44040800| 0x1;//0x4400110c
-	*pTT = 0x44040c00 | 0x1; //0x44001110
+	pTT = (unsigned int *)MMU_PAGE_TABLE_BASE+(uVaStart>>20);
+	*pTT++ = (SND_PAGE_TABLE_BASE_APP0) | 0x1; 
+	*pTT++ = (SND_PAGE_TABLE_BASE_APP0 + 0x400) | 0x1;
+	*pTT++ = (SND_PAGE_TABLE_BASE_APP0 + 0x800)| 0x1;
+	*pTT = (SND_PAGE_TABLE_BASE_APP0 + 0xc00) | 0x1;
 }
-void set_second_table_address_App1(void)
+void set_second_table_address_App1(unsigned int uVaStart)
 {
 	unsigned int* pTT;
 
-	pTT = (unsigned int *) 0x44081104; // ���� �ּ�
-	*pTT++ = 0x440c0000 | 0x1; //0x44081104
-	*pTT++ = 0x440c0400 | 0x1;//0x44081108
-	*pTT++ = 0x440c0800| 0x1;//0x4408110c
-	*pTT = 0x440c0c00 | 0x1; //0x44081110
+	pTT = (unsigned int *)0x44080000+(uVaStart>>20);
+	*pTT++ = (SND_PAGE_TABLE_BASE_APP1) | 0x1; 
+	*pTT++ = (SND_PAGE_TABLE_BASE_APP1 + 0x400) | 0x1;
+	*pTT++ = (SND_PAGE_TABLE_BASE_APP1 + 0x800)| 0x1;
+	*pTT = (SND_PAGE_TABLE_BASE_APP1 + 0xc00) | 0x1;
 }
 
-void init_second_table_descriptor_App0(void)
-{
-	unsigned int* pTT;
-	int i;
-	pTT = (unsigned int *) SND_PAGE_TABLE_BASE_APP0; //section1
-	for (i=0; i<256; i++)
-	{
-		//*pTT++ = 0x2 | WT; //WT ����
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ����
-	}
-
-	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP0 + 0x400) ; //section2
-	for (i=0; i<256; i++)
-	{
-		//*pTT++ = 0x2 | WT;
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ����
-	}
-
-	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP0 + 0x800); //section3
-	for (i=0; i<256; i++)
-	{
-		//*pTT++ = 0x2 | WT;
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ����
-	}
-
-	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP0 + 0xc00); //section4
-	for (i=0; i<256; i++)
-	{
-		//*pTT++ = 0x2 | WT;
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ����
-	}
-}
-
-
-void init_second_table_descriptor_App1(void)
+void init_second_table_descriptor_App(unsigned int PAGE_APP)
 {
 	unsigned int* pTT;
 	int i;
-	pTT = (unsigned int *) SND_PAGE_TABLE_BASE_APP1; //section1
-	for (i=0; i<256; i++)
-	{
-		//*pTT++ = 0x2 | WT;
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ����
-	}
+	int next_section;
+	pTT = (unsigned int *) PAGE_APP; //section1
 
-	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP1 + 0x400); //section2
-	for (i=0; i<256; i++)
-	{
-		//*pTT++ = 0x2 | WT;
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ����
-	}
-
-	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP1 + 0x800); //section3
-	for (i=0; i<256; i++)
-	{
-		//*pTT++ = 0x2 | WT;
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ����
-	}
-
-	pTT = (unsigned int *) (SND_PAGE_TABLE_BASE_APP1 + 0xc00); //section4
-	for (i=0; i<256; i++)
-	{
-		//*pTT++ = 0x2 | WT;
-		*pTT++ = 0x2 |(WT_WBWA_PAGE); //WT_WBWA ����
+	for (next_section = 0; next_section < 4; next_section++) {
+		for (i=0; i<256; i++) {
+			*pTT++ = 0x2 |(WT_WBWA_PAGE);
+		}
+		pTT += 0x400;
 	}
 }
-
 
 static void CoTTSet_L1(void);
 static void CoTTSet_L1L2(void);

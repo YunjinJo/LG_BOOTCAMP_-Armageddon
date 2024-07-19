@@ -14,7 +14,7 @@ SECTIONS
 	{
 		crt0.o(.text)
 		*(.text)
-    		. = ALIGN(4); 
+    		. = ALIGN(4096); 
 	} > REGION_TEXT
 	
 	.rodata :
@@ -22,7 +22,7 @@ SECTIONS
 		__RO_BASE__ = .;	
 		*(.rodata)
    		*(.rodata.*)			
-   		. = ALIGN(4); 
+   		. = ALIGN(4096); 
    		__RO_LIMIT__ = .;
 	} > REGION_RODATA
 
@@ -31,7 +31,7 @@ SECTIONS
 		__RW_BASE__ = .;
 		*(.data)
    		*(.data.*)		
-		. = ALIGN(4); 		
+		. = ALIGN(4096); 		
 		__RW_LIMIT__ = .;			
 	} > REGION_DATA
 	
@@ -40,7 +40,7 @@ SECTIONS
 		__ZI_BASE__ = .;
 		*(.bss)
    		*(.bss.*)		
-		. = ALIGN(4); 		
+		. = ALIGN(4096); 		
 		__ZI_LIMIT__ = .;
 	} > REGION_BSS
 }

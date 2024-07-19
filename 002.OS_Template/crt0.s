@@ -56,7 +56,7 @@ HandlerUndef:
 	ldmfd	sp!,{r0-r3, r12, lr}
 	subs	pc, lr, #4
 
-@ ½ÇÇèÀ» À§ÇÏ¿© ¹®Á¦°¡ ¹ß»ýÇÑ ´ÙÀ½ ÁÖ¼Ò·Î º¹±ÍÇÏµµ·Ï ¼öÁ¤ @
+@ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼Ò·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ @
 
 HandlerDabort:
 	stmfd	sp!,{r0-r3, r12, lr}
@@ -85,13 +85,27 @@ HandlerSVC:
 	@bl		SVC_Handler
 	@ldmfd	sp!,{r0-r3, r12, pc}^
 
-    stmfd sp!, {r4, lr}
+    stmfd sp!, {r4, r5, lr}
     ldr r4, [lr, #-4]
     bic r4,r4,#0xff000000
     ldr r12, =SVC_Handler
     ldr lr, [r12, r4, lsl #2]
+
+	push {r0, r1, r2}
+	mrs r0, cpsr
+	bic r1, r0, #0x1f
+	orr r1, r1, #0x1f
+	msr cpsr_cxsf, r1
+	mov r4, sp @ SYS ëª¨ë“œ sp ê°€ì ¸ì˜´ 
+	msr cpsr_cxsf, r0
+	pop {r0, r1, r2}
+
+	mov r5, sp @ sp ë°±ì—…
+	mov sp, r4 @ í˜„ìž¬ spë¥¼ SYSëª¨ë“œ spë¡œ ë³€ê²½
+
     blx lr
-    ldmfd sp!, {r4, pc}^
+	mov sp, r5 @ sp ë³µêµ¬
+    ldmfd sp!, {r4, r5, pc}^
 
 @--------------------------------------------------
 @ Reset Handler Routine

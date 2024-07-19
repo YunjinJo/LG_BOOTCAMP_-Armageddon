@@ -62,7 +62,7 @@ void SVC_Print_Hello(void)
 
 
 void * SVC_Handler[] = {
-	print_test, 
+	(void *) _Print_Test_SVC, 
 	(void *) SVC_Print_Hello,
 	(void *) Lcd_Clr_Screen,
 	(void *) Lcd_Draw_BMP,

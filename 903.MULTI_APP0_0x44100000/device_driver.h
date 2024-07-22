@@ -20,7 +20,7 @@ extern void Delay(unsigned int v);
 extern void Uart1_Send_Byte(char data);
 extern void Uart1_Send_String(const char *pt);
 extern void Uart1_Printf(const char *fmt,...);
-extern char Uart1_Get_Char(void);
+extern char SVC_Uart1_Get_Char(void);
 extern char Uart1_Get_Pressed(void);
 extern int Uart1_GetIntNum(void);
 
@@ -81,5 +81,5 @@ extern void SVC_Lcd_Brightness_Control(int level);
 extern void Lcd_Draw_BMP_File_24bpp(int x, int y, void *fp);
 extern void Lcd_Draw_STACK(void);
 extern void Lcd_Printf(int x, int y, int color, int bkcolor, int zx, int zy, char *fmt,...);
-extern void Lcd_Draw_Bar(int x1, int y1, int x2, int y2, int color);
+extern void SVC_Lcd_Draw_Bar(int x1, int y1, int x2, int y2, int color);
 extern void SVC_Lcd_Draw_Line(int x1,int y1,int x2,int y2,int color);

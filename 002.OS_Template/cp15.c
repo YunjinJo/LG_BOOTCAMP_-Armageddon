@@ -1,5 +1,6 @@
 #include "cp15.h"
 #include "option.h"
+#include "device_driver.h"
 
 /* PA conversion */
 
@@ -160,7 +161,6 @@ void SetTransTable(unsigned int uVaStart, unsigned int uVaEnd, unsigned int uPaS
 	}
 }
 
-
 void SetTransTable_app1(unsigned int uVaStart, unsigned int uVaEnd, unsigned int uPaStart, unsigned int attr)
 {
 	int i;
@@ -170,33 +170,55 @@ void SetTransTable_app1(unsigned int uVaStart, unsigned int uVaEnd, unsigned int
 	uPaStart &= ~0xfffff;
 	uVaStart &= ~0xfffff;
 
-	pTT = (unsigned int *)0x44080000+(uVaStart>>20);
+	pTT = (unsigned int *)(MMU_PAGE_TABLE_BASE_APP1+(uVaStart>>20));
 	nNumOfSec = (0x1000+(uVaEnd>>20)-(uVaStart>>20))%0x1000;
+
 	for(i=0; i<=nNumOfSec; i++)
 	{
 		*pTT++ = attr|(uPaStart+(i<<20));
 	}
 }
 
+void set_second_table(unsigned int uVaStart, unsigned int uVaEnd, unsigned int uPaStart, unsigned int attr, unsigned int ttbase)
+{
+	int i;
+	unsigned int *pTT1;
+	unsigned int *pTT2;
+	unsigned int nNumOfSec;
+
+	pTT1 = (unsigned int *) ttbase + (uVaStart>>20);
+	pTT2 = (unsigned int *) ((*pTT1)&(~0x1ff)) + ((uVaStart&0xfff00fff)>>12);
+
+
+	uPaStart &= ~0xfff;
+	uVaStart &= ~0xfff;
+	nNumOfSec = (0x100 + (uVaEnd>>12) - (uVaStart>>12))%0x100;
+
+	for(i = 0; i <= nNumOfSec; i++)
+	{
+		*pTT2++ = attr|(3<<4)|(uPaStart + (i << 12));
+	}
+}
+
 void set_second_table_address_App0(unsigned int uVaStart)
 {
 	unsigned int* pTT;
-
-	pTT = (unsigned int *)MMU_PAGE_TABLE_BASE+(uVaStart>>20);
-	*pTT++ = (SND_PAGE_TABLE_BASE_APP0) | 0x1; 
-	*pTT++ = (SND_PAGE_TABLE_BASE_APP0 + 0x400) | 0x1;
-	*pTT++ = (SND_PAGE_TABLE_BASE_APP0 + 0x800)| 0x1;
-	*pTT = (SND_PAGE_TABLE_BASE_APP0 + 0xc00) | 0x1;
+	uVaStart &= ~0xfffff;
+	pTT = (unsigned int *) 0x44001104; // 시작 주소
+	*pTT++ = 0x44040000 | 0x1; //0x44001104
+	*pTT++ = 0x44040400 | 0x1;//0x440011080
+	*pTT++ = 0x44040800| 0x1;//0x4400110c
+	*pTT = 0x44040c00 | 0x1; //0x44001110
 }
 void set_second_table_address_App1(unsigned int uVaStart)
 {
 	unsigned int* pTT;
-
-	pTT = (unsigned int *)0x44080000+(uVaStart>>20);
-	*pTT++ = (SND_PAGE_TABLE_BASE_APP1) | 0x1; 
-	*pTT++ = (SND_PAGE_TABLE_BASE_APP1 + 0x400) | 0x1;
-	*pTT++ = (SND_PAGE_TABLE_BASE_APP1 + 0x800)| 0x1;
-	*pTT = (SND_PAGE_TABLE_BASE_APP1 + 0xc00) | 0x1;
+	uVaStart &= ~0xfffff;
+	pTT = (unsigned int *) 0x44081104; // 시작 주소
+	*pTT++ = 0x440c0000 | 0x1; //0x44081104
+	*pTT++ = 0x440c0400 | 0x1;//0x44081108
+	*pTT++ = 0x440c0800 | 0x1;//0x4408110c
+	*pTT   = 0x440c0c00 | 0x1; //0x44081110
 }
 
 void init_second_table_descriptor_App(unsigned int PAGE_APP)
@@ -204,13 +226,12 @@ void init_second_table_descriptor_App(unsigned int PAGE_APP)
 	unsigned int* pTT;
 	int i;
 	int next_section;
-	pTT = (unsigned int *) PAGE_APP; //section1
 
 	for (next_section = 0; next_section < 4; next_section++) {
+		pTT = (unsigned int *) PAGE_APP + (0x400 * next_section);
 		for (i=0; i<256; i++) {
 			*pTT++ = 0x2 |(WT_WBWA_PAGE);
 		}
-		pTT += 0x400;
 	}
 }
 
@@ -427,7 +448,4 @@ void CoTTSet_L1L2_app1(void)
 
 	SetTransTable_app1(LCD_FB_END_ADDR, 0x80000000-1, LCD_FB_END_ADDR, RW_NO_ACCESS);
 	SetTransTable_app1(0x80000000, 0xFFFFFFFF, 0x80000000, RW_NO_ACCESS);
-
-	CoSetTTBase(0x44080000|(1<<6)|(1<<3)|(0<<1)|(0<<0));
-	CoSetDomain(0x55555550|(DOMAIN_NO_ACCESS<<2)|(DOMAIN_CLIENT));
 }

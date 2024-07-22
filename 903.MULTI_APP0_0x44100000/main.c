@@ -22,11 +22,10 @@ void Main(void) {
 				int cur_y_pixel = GO_BOARD_OFFSET_Y + cur_y*GO_BOARD_SPACE;
 				SVC_Lcd_Draw_Bar(cur_x_pixel - 10, cur_y_pixel - 10, cur_x_pixel+ 10, cur_y_pixel + 10, RED);
 
-				SVC_Uart_Printf(">>Choose place to put your stone\n");
+				SVC_Uart_Printf("=====MOVE : W/A/S/D , SET : ENTER=====\n\n");
 				char arr_input;
 				arr_input = SVC_Uart1_Get_Char();
 
-				SVC_Uart_Printf(">>clicked : %c", arr_input);
 				switch (arr_input) {
 					case 'w': //up
 					SVC_Uart_Printf("UP CLICKED\n");
@@ -46,13 +45,14 @@ void Main(void) {
 					break;
 					case 13://ENTER
 					SVC_Uart_Printf("ENTER CLICKED\n");
-					if (checkValidate(cur_x,cur_y)==0){
+					if (Check_Validate(cur_x,cur_y)==0){
 						SVC_Uart_Printf("Choose Another Spot!\n");
+
 						break;
 					}
 
-					add_stone((STONE) {cur_color,cur_x,cur_y});
-					if(checkWin(cur_x, cur_y, cur_color)==0){
+					Add_Stone((STONE) {cur_color,cur_x,cur_y});
+					if(Check_Win(cur_x, cur_y, cur_color)==0){
 						cur_color = (cur_color==BLACK) ? WHITE : BLACK;
 					}
 					else{
@@ -74,9 +74,6 @@ void Main(void) {
 				if(cur_y>MAX_XY) cur_y = MAX_XY;
 				if(cur_x<0) cur_x = 0;
 				if(cur_y<0) cur_y = 0;
-
-				//break;
-
 			}
 
 			for (;;)

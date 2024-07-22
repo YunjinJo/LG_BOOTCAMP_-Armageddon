@@ -53,7 +53,9 @@ void * SVC_Handler[] = {
 	(void *) Lcd_Select_Display_Frame_Buffer,
 	(void *) Lcd_Select_Draw_Frame_Buffer,
 	(void *) Lcd_Draw_Back_Color,
-	(void *) Lcd_Draw_Line
+	(void *) Lcd_Draw_Line,
+	(void *) Lcd_Draw_Bar,
+	(void *) Uart1_Get_Char
 	};
 
 //void SVC_Handler(unsigned int addr, unsigned int mode)

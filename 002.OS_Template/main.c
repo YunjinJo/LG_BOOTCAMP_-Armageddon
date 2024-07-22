@@ -1,5 +1,6 @@
 #include "device_driver.h"
 #include "global.h"
+#include "demand_page.h"
 
 extern WIN_INFO_ST ArrWinInfo[5];
 
@@ -118,16 +119,23 @@ void Main(void)
 	pcb_init(RAM_APP0, STACK_BASE_APP0, STACK_BASE_APP1);
 //	for(;;)
 	{
+		
 		SetTransTable(RAM_APP0, (RAM_APP0+SIZE_APP0-1), RAM_APP0, RW_WBWA | NG_ON);
 		SetTransTable(STACK_LIMIT_APP0, STACK_BASE_APP0-1, STACK_LIMIT_APP0, RW_WBWA);
-//		set_second_table_address_App0(RAM_APP0);
-//		init_second_table_descriptor_App(SND_PAGE_TABLE_BASE_APP0);
+		
+		//init_second_table_descriptor_App(SND_PAGE_TABLE_BASE_APP0);
 
 		CoTTSet_L1L2_app1();
 		SetTransTable_app1(RAM_APP0, (RAM_APP0+SIZE_APP1-1), RAM_APP1, RW_WBWA | NG_ON);
 		SetTransTable_app1(STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, RW_WBWA);
-//		set_second_table_address_App1(RAM_APP0);
-//		init_second_table_descriptor_App(SND_PAGE_TABLE_BASE_APP1);
+    
+		//set_second_table_address_App1(RAM_APP0);
+		//init_second_table_descriptor_App(SND_PAGE_TABLE_BASE_APP1);
+
+		set_second_table(RAM_APP0 + 0*MMU_PAGE_TABLE_SIZE, (RAM_APP0 + 1*MMU_PAGE_TABLE_SIZE - 1), DEMAND_PAGE_START_ADDR, 0x0, MMU_PAGE_TABLE_BASE);
+		set_second_table(RAM_APP0 + 1*MMU_PAGE_TABLE_SIZE, (RAM_APP0 + 2*MMU_PAGE_TABLE_SIZE - 1), DEMAND_PAGE_START_ADDR, 0x0, MMU_PAGE_TABLE_BASE);
+		set_second_table(RAM_APP0 + 2*MMU_PAGE_TABLE_SIZE, (RAM_APP0 + 3*MMU_PAGE_TABLE_SIZE - 1), DEMAND_PAGE_START_ADDR, 0x0, MMU_PAGE_TABLE_BASE);
+		set_second_table(RAM_APP0 + 3*MMU_PAGE_TABLE_SIZE, (RAM_APP0 + SIZE_APP0 - 1), DEMAND_PAGE_START_ADDR, 0x0, MMU_PAGE_TABLE_BASE);
 		
 		CoInvalidateMainTlb();
 		start_app(SEL_APP0); // SEL_APP0 or SEL_APP1

@@ -70,6 +70,8 @@ void * SVC_Handler[] = {
 	(void *) Lcd_Clr_Screen, 					//13
 	(void *) Get_Input_Flag, 					//14
 	(void *) Toggle_Input_Flag, 				//15
+	(void *) Lcd_Draw_Bar,        //16
+	(void *) Uart1_Get_Char,      //17
 	};
 
 //void SVC_Handler(unsigned int addr, unsigned int mode)
@@ -257,7 +259,6 @@ void Uart1_ISR(void)
 
 void Key3_ISR(void)
 {
-	int i = 0;
 	rEXT_INT40_PEND = 0x1<<3;
 
 	Uart1_Printf("Key3 Pressed\n");
@@ -265,40 +266,20 @@ void Key3_ISR(void)
 
 	GIC_Clear_Pending_Clear(0,51);
 	GIC_Write_EOI(0, 51);
-
+  
 	Toggle_Input_Flag();
-
-	// for (i = 0; i < 15; i++) {
-	// 	Uart1_Printf("REG %d : %X\n", i, reg_info_app1->registers[i]);
-	// }
-	// Uart1_Printf("PC : %X\n", reg_info_app1->PC);
-	// Uart1_Printf("CPSR : %X\n", reg_info_app1->CPSR);
-	// CoSetTTBase((0x44080000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
-	// //CoInvalidateMainTlb();
-	// CoSetASID(1);
-	// Get_Context_And_Switch();
 }
 
 void Key4_ISR(void)
 {
-	int i = 0;
 	rEXT_INT40_PEND = 0x1<<4;
 
 	Uart1_Printf("Key4 Pressed\n");
 
 	GIC_Clear_Pending_Clear(0,52);
 	GIC_Write_EOI(0, 52);
-
+  
 	Toggle_Input_Flag();
-
-	// for (i = 0; i < 15; i++) {
-	// 	Uart1_Printf("REG %d : %X\n", i, reg_info_app0->registers[i]);
-	// }
-	// Uart1_Printf("PC : %X\n", reg_info_app0->PC);
-	// Uart1_Printf("CPSR : %X\n", reg_info_app0->CPSR);
-	// CoSetTTBase((0x44000000 |(0<<6)|(1<<3)|(0<<1)|(1<<0)));
-	// //CoInvalidateMainTlb();
-	// CoSetASID(0);
 }
 
 void Timer0_ISR(void)

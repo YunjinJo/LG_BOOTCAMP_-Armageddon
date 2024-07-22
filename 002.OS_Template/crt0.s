@@ -77,7 +77,7 @@ HandlerDabort:
 	mrc		p15, 0, r0, c6, c0, 0 @ save fault_addr
 	blx		demand_paging
 	ldmfd	sp!, {r0-r3, r12, lr}
-	subs	pc, lr, #4	@ return
+	subs	pc, lr, #8	@ return
 
 
 HandlerPabort:

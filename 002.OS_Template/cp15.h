@@ -203,6 +203,7 @@ void CoTTSet_L1L2_app1(void);
 void set_second_table_address_App0(unsigned int uVaStart);
 void init_second_table_descriptor_App(unsigned int PAGE_APP);
 void set_second_table_address_App1(unsigned int uVaStart);
+void set_second_table(unsigned int uVaStart, unsigned int uVaEnd, unsigned int uPaStart, unsigned int attr, unsigned int ttbase);
 /* PA conversion */
 
 extern unsigned int CoGetOSReadPA(unsigned int va);

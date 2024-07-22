@@ -1,95 +1,81 @@
 #include "Device_Driver.h"
-
-//#include ".\images\image0.h"
-//#include ".\images\img101.h"
-#include ".\images\airplane.h"
-//#include ".\images\go_board.h"
-#include ".\images\go_board_2.h"
-#include ".\images\white_rock.h"
-
-#define BLACK	0x0000
-#define WHITE	0xffff
-#define BLUE	0x001f
-#define GREEN	0x07e0
-#define RED		0xf800
-#define YELLOW	0xffe0
-#define VIOLET	0xf81f
-#define GO_BOARD 0x996633
+#include "board_info.h"
 
 #define DELAY	8000
 #define LCD_WIDTH	1024
 #define LCD_HEIGHT	600
 #define GO_BOARD_SIZE 600
-
-const unsigned short * img[] = { airplane, go_board_2, white_rock };
-
-
-
-//void Draw_Line_With_Thickness(int x1, int y1, int x2, int y2, int color,
-//		int thickness, int dir) {
-//	int i = 0;
-//	if (dir == 0) {
-//		for (i = 0; i < thickness; i++) {
-//			SVC_Lcd_Draw_Line(x1 + i, y1, x2 + i, y2, color);
-//		}
-//	} else
-//		for (i = 0; i < thickness; i++) {
-//			SVC_Lcd_Draw_Line(x1, y1 + i, x2, y2 + i, color);
-//		}
-//}
-//
-//void Draw_Board(){
-//
-//}
+#define MAX_XY 9
+#define ROCK_OFFSET 25
 
 void Main(void) {
-	SVC_Uart_Printf(">>APP0 => LCD Display\n");
+			Get_Board_State();
 
-	//ArrWinInfo[0].bpp_mode = BPPMODE_16BPP_565;
-	//ArrWinInfo[0].bytes_per_pixel = 2;
-	//ArrWinInfo[0].p_sizex = 1024;
-	//ArrWinInfo[0].p_sizey = 600;
-	//ArrWinInfo[0].v_sizex = 1024;
-	//ArrWinInfo[0].v_sizey = 600;
-	//ArrWinInfo[0].posx = (1024 - ArrWinInfo[0].p_sizex) / 2;
-	//ArrWinInfo[0].posy = (600 - ArrWinInfo[0].p_sizey) / 2;
+			int cur_x = 0;
+			int cur_y = 0;
+			unsigned int cur_color = BLACK;
+			unsigned short game_end = 0;
 
-//	SVC_Lcd_Init();
-//	SVC_Lcd_Win_Init(0, 1);
-//	SVC_Lcd_Brightness_Control(8);
-//
-//	SVC_Lcd_Select_Display_Frame_Buffer(0, 0);
-//	SVC_Lcd_Select_Draw_Frame_Buffer(0, 0);
-//	SVC_Lcd_Clr_Screen();
+			for (;;) {
 
-//	for(;;)
-//	{
-	//SVC_Lcd_Draw_BMP(0,0,img[0]);
-	//Delay(DELAY);
-	//SVC_Lcd_Clr_Screen();
-	SVC_Lcd_Draw_Back_Color(GO_BOARD);
-//
-//	Draw_Line_With_Thickness((LCD_WIDTH - GO_BOARD_SIZE) / 2, 0,
-//			(LCD_WIDTH - GO_BOARD_SIZE) / 2, 600, BLACK, 4, 0);
+				int cur_x_pixel = GO_BOARD_OFFSET_X + cur_x*GO_BOARD_SPACE;
+				int cur_y_pixel = GO_BOARD_OFFSET_Y + cur_y*GO_BOARD_SPACE;
+				SVC_Lcd_Draw_Bar(cur_x_pixel - 10, cur_y_pixel - 10, cur_x_pixel+ 10, cur_y_pixel + 10, RED);
 
+				SVC_Uart_Printf("=====MOVE : W/A/S/D , SET : ENTER=====\n\n");
+				char arr_input;
+				arr_input = SVC_Uart1_Get_Char();
 
+				switch (arr_input) {
+					case 'w': //up
+					SVC_Uart_Printf("UP CLICKED\n");
+					cur_y--;
+					break;
+					case 's'://down
+					SVC_Uart_Printf("DOWN CLICKED\n");
+					cur_y++;;
+					break;
+					case 'a'://left
+					SVC_Uart_Printf("LEFT CLICKED\n");
+					cur_x --;
+					break;
+					case 'd'://right
+					SVC_Uart_Printf("RIGHT CLICKED\n");
+					cur_x ++;
+					break;
+					case 13://ENTER
+					SVC_Uart_Printf("ENTER CLICKED\n");
+					if (Check_Validate(cur_x,cur_y)==0){
+						SVC_Uart_Printf("Choose Another Spot!\n");
 
-//	SVC_Lcd_Draw_Line((LCD_WIDTH - GO_BOARD_SIZE) / 2, 0,
-//			(LCD_WIDTH - GO_BOARD_SIZE) / 2, 600, BLACK);
+						break;
+					}
 
-	//void Lcd_Draw_Line(int x1,int y1,int x2,int y2,int color)
+					Add_Stone((STONE) {cur_color,cur_x,cur_y});
+					if(Check_Win(cur_x, cur_y, cur_color)==0){
+						cur_color = (cur_color==BLACK) ? WHITE : BLACK;
+					}
+					else{
+						game_end = 1;
+					}
+					break;
+					default:
+					break;
+				}
+				if(game_end == 1){
+					Get_Board_State();
+					SVC_Uart_Printf("GAME END! WINNER : %s\n", cur_color==BLACK? "BLACK" : "WHITE");
+					break;
+				}
 
-//	SVC_Lcd_Draw_BMP(0 ,0,img[1]);
-	SVC_Lcd_Draw_BMP((LCD_WIDTH - GO_BOARD_SIZE)/2 ,(LCD_HEIGHT - GO_BOARD_SIZE)/2,img[1]);
-	Delay(DELAY);
-	SVC_Lcd_Draw_BMP((LCD_WIDTH - GO_BOARD_SIZE)/2 ,(LCD_HEIGHT - GO_BOARD_SIZE)/2,img[2]);
-//		Delay(DELAY);
-	//SVC_Lcd_Clr_Screen();
+				// 이전 state 가져옴
+				Get_Board_State();
+				if(cur_x>MAX_XY) cur_x = MAX_XY;
+				if(cur_y>MAX_XY) cur_y = MAX_XY;
+				if(cur_x<0) cur_x = 0;
+				if(cur_y<0) cur_y = 0;
+			}
 
-//		SVC_Lcd_Draw_BMP(0,0,img[2]);
-//		Delay(DELAY);
-//		SVC_Lcd_Clr_Screen();
-//	}
-//}
-	for(;;);
-}
+			for (;;)
+			;
+		}

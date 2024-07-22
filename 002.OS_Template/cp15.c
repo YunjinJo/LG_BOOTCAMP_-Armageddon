@@ -170,7 +170,7 @@ void SetTransTable_app1(unsigned int uVaStart, unsigned int uVaEnd, unsigned int
 	uPaStart &= ~0xfffff;
 	uVaStart &= ~0xfffff;
 
-	pTT = (unsigned int *)(MMU_PAGE_TABLE_BASE_APP1+(uVaStart>>20));
+	pTT = (unsigned int *)MMU_PAGE_TABLE_BASE_APP1+(uVaStart>>20);
 	nNumOfSec = (0x1000+(uVaEnd>>20)-(uVaStart>>20))%0x1000;
 
 	for(i=0; i<=nNumOfSec; i++)
@@ -448,4 +448,7 @@ void CoTTSet_L1L2_app1(void)
 
 	SetTransTable_app1(LCD_FB_END_ADDR, 0x80000000-1, LCD_FB_END_ADDR, RW_NO_ACCESS);
 	SetTransTable_app1(0x80000000, 0xFFFFFFFF, 0x80000000, RW_NO_ACCESS);
+
+	CoSetTTBase(0x44080000|(1<<6)|(1<<3)|(0<<1)|(0<<0));
+	CoSetDomain(0x55555550|(DOMAIN_NO_ACCESS<<2)|(DOMAIN_CLIENT));
 }

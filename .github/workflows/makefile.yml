@@ -30,3 +30,8 @@ jobs:
     - name: build start
       run: make all
       working-directory: ${{ env.working-directory }}
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: build_file
+        path: ./002.OS_Template/dram_0x40000000.bin

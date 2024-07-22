@@ -1,4 +1,4 @@
-#include "Device_Driver.h"
+#include "device_driver.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -281,7 +281,7 @@ void Lcd_Brightness_Control(int level)
 
 void Lcd_Draw_BMP_File_24bpp(int x, int y, void *fp)
 {
-	// 24bpp. ºñ¾ÐÃà ¸ðµå¸¸ Áö¿ø
+	// 24bpp. ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½å¸¸ ï¿½ï¿½ï¿½ï¿½
 	int xx, yy, p;
 	unsigned char * t;
 
@@ -342,8 +342,8 @@ void Lcd_Han_Putch(int x,int y,int color,int bkcolor, int data, int zx, int zy)
 	unsigned char bitmask[]={128,64,32,16,8,4,2,1};
 	int newColor;
 
-	first  = (unsigned)((data>>8)&0x00ff);	// »óÀ§ ¹ÙÀÌÆ®
-	middle = (unsigned)(data&0x00ff);	// ÇÏÀ§ ¹ÙÀÌÆ®
+	first  = (unsigned)((data>>8)&0x00ff);	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
+	middle = (unsigned)(data&0x00ff);	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
 	offset = (first-0xA1)*(0x5E)+(middle-0xA1);
 
 	first  = *(HanTable+offset*2);
@@ -539,6 +539,6 @@ void Lcd_Printf(int x, int y, int color, int bkcolor, int zx, int zy, char *fmt,
 }
 
 void Lcd_Draw_STACK(void){
-	//stack test, ÇöÀç sp, ÇöÀç stack guard, Áö±Ý±îÁö guard °³¼ö, error»óÈ²(overflow, timer)
+	//stack test, ï¿½ï¿½ï¿½ï¿½ sp, ï¿½ï¿½ï¿½ï¿½ stack guard, ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ guard ï¿½ï¿½ï¿½ï¿½, errorï¿½ï¿½È²(overflow, timer)
 	Lcd_Printf(0,0,WHITE, BLACK,3,3,"APP0 STACK test", 1);
 }

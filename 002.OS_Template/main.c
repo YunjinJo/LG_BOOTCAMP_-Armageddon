@@ -118,6 +118,7 @@ void Main(void)
 	pcb_init(RAM_APP0, STACK_BASE_APP0, STACK_BASE_APP1);
 //	for(;;)
 	{
+		
 		SetTransTable(RAM_APP0, (RAM_APP0+SIZE_APP0-1), RAM_APP0, RW_WBWA | NG_ON);
 		SetTransTable(STACK_LIMIT_APP0, STACK_BASE_APP0-1, STACK_LIMIT_APP0, RW_WBWA);
 		set_second_table_address_App0(RAM_APP0);
@@ -130,7 +131,7 @@ void Main(void)
 		init_second_table_descriptor_App(SND_PAGE_TABLE_BASE_APP1);
 		
 		CoInvalidateMainTlb();
-		start_app(SEL_APP0); // SEL_APP0 or SEL_APP1
+		start_app(SEL_APP1); // SEL_APP0 or SEL_APP1
 
 	}
 }

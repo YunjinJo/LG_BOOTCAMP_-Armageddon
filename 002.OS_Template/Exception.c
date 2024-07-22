@@ -43,19 +43,35 @@ void Pabort_Handler(unsigned int addr, unsigned int mode)
 	for(;;);
 }
 
+unsigned int Get_Input_Flag(void)
+{
+	return INPUT_FLAG;
+}
+
+void Toggle_Input_Flag(void) 
+{
+    INPUT_FLAG = 1 - INPUT_FLAG;
+}
+
 void * SVC_Handler[] = {
-	(void *) Lcd_Clr_Screen,
-	(void *) Lcd_Draw_BMP,
-	(void *) Uart_Printf,
-	(void *) Lcd_Init,
-	(void *) Lcd_Win_Init,
-	(void *) Lcd_Brightness_Control,
-	(void *) Lcd_Select_Display_Frame_Buffer,
-	(void *) Lcd_Select_Draw_Frame_Buffer,
-	(void *) Lcd_Draw_Back_Color,
-	(void *) Lcd_Draw_Line,
-	(void *) Lcd_Draw_Bar,
-	(void *) Uart1_Get_Char
+	(void *) Lcd_Clr_Screen,					//0
+	(void *) Lcd_Draw_BMP,						//1
+	(void *) Uart_Printf,						//2
+	(void *) Lcd_Init,							//3
+	(void *) Lcd_Win_Init,						//4
+	(void *) Lcd_Brightness_Control,			//5
+	(void *) Lcd_Select_Display_Frame_Buffer,	//6
+	(void *) Lcd_Select_Draw_Frame_Buffer,		//7
+	(void *) Lcd_Draw_Back_Color,				//8
+	(void *) Lcd_Draw_Line,						//9
+	(void *) Lcd_Printf,						//10
+	(void *) Uart1_GetIntNum,					//11
+	(void *) Uart1_GetString,					//12
+	(void *) Lcd_Clr_Screen, 					//13
+	(void *) Get_Input_Flag, 					//14
+	(void *) Toggle_Input_Flag, 				//15
+	(void *) Lcd_Draw_Bar,        //16
+	(void *) Uart1_Get_Char,      //17
 	};
 
 //void SVC_Handler(unsigned int addr, unsigned int mode)
@@ -247,8 +263,11 @@ void Key3_ISR(void)
 
 	Uart1_Printf("Key3 Pressed\n");
 
+
 	GIC_Clear_Pending_Clear(0,51);
 	GIC_Write_EOI(0, 51);
+  
+	Toggle_Input_Flag();
 }
 
 void Key4_ISR(void)
@@ -259,6 +278,8 @@ void Key4_ISR(void)
 
 	GIC_Clear_Pending_Clear(0,52);
 	GIC_Write_EOI(0, 52);
+  
+	Toggle_Input_Flag();
 }
 
 void Timer0_ISR(void)

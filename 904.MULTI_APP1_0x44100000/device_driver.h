@@ -23,8 +23,17 @@ extern void Uart1_Send_Byte(char data);
 extern void Uart1_Send_String(const char *pt);
 extern void Uart1_Printf(const char *fmt,...);
 extern char Uart1_Get_Char(void);
+extern void Uart1_GetString(char *string);
 extern char Uart1_Get_Pressed(void);
 extern int Uart1_GetIntNum(void);
+
+extern void Lcd_Printf(int x, int y, int color, int bkcolor, int zx, int zy, char *fmt,...);
+void Lcd_Clr_Screen(void);
+extern void Lcd_Draw_Back_Color(int color);
+
+extern unsigned int Get_Input_Flag(void);
+extern void Toggle_Input_Flag(void);
+
 
 // key.c
 extern int Key_Get_Key_Pressed(void);

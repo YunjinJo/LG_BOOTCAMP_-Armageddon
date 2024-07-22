@@ -53,3 +53,11 @@
 #define LCD_FB40_START_ADDR		(LCD_FB31_START_ADDR  + LCD_FB3_SIZE)
 #define LCD_FB41_START_ADDR		(LCD_FB40_START_ADDR  + LCD_FB4_SIZE)
 #define LCD_FB_END_ADDR			(LCD_FB41_START_ADDR  + LCD_FB4_SIZE)
+
+#define BLACK	0x0000
+#define WHITE	0xffff
+#define BLUE	0x001f
+#define GREEN	0x07e0
+#define RED		0xf800
+#define YELLOW	0xffe0
+#define VIOLET	0xf81f

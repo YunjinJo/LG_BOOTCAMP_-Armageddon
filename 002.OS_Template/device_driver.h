@@ -3,6 +3,7 @@
 #include "option.h"
 #include "cp15.h"
 #include "global.h"
+#include "APP1_fn.h"
 
 #include <malloc.h>
 #include <stdarg.h>
@@ -34,6 +35,7 @@ extern void Uart1_Send_Byte(char data);
 extern void Uart1_Send_String(const char *pt);
 extern void Uart1_Printf(const char *fmt,...);
 extern char Uart1_Get_Char(void);
+extern void Uart1_GetString(char *string);
 extern char Uart1_Get_Pressed(void);
 extern int Uart1_GetIntNum(void);
 extern void Uart1_ISR_Enable(int rx,int tx, int err);

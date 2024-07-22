@@ -55,11 +55,11 @@ SVC_Lcd_Draw_Line:
 
 	.global SVC_Lcd_Draw_Bar
 SVC_Lcd_Draw_Bar:
-	svc		10
+	svc		16
 	bx		lr
 
 	.global SVC_Uart1_Get_Char
 SVC_Uart1_Get_Char:
-	svc 	11
+	svc 	17
 	bx		lr
 

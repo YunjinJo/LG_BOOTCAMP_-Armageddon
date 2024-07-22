@@ -10,18 +10,23 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./002.OS_Template
 
     steps:
     - uses: actions/checkout@main
 
-    - name: configure
-      run: cd "002.OS_Template"
+    - name: Install Arm GNU Toolchain (arm-none-eabi-gcc)
+      uses: carlosperate/arm-none-eabi-gcc-action@v1
+      with:
+        release: '4.8-2013-q4' # <-- The compiler release to use
 
-    - name: Install dependencies
-      run: make
+    - run: |
+            export C_INCLUDE_PATH=/home/runner/gcc-arm-none-eabi-4_8-2013q4/lib/gcc/arm-none-eabi/4.8.1/include | 
+            export CPLUS_INCLUDE_PATH=/home/runner/gcc-arm-none-eabi-4_8-2013q4/lib/gcc/arm-none-eabi/4.8.1/include |
+            export LIBRARY_PATH=/home/runner/gcc-arm-none-eabi-4_8-2013q4/lib/gcc/arm-none-eabi/4.8.1 |
+            mkdir output
 
-    - name: Run check
-      run: make check
-
-    - name: Run distcheck
-      run: make distcheck
+    - name: build start
+      run: make all
+      working-directory: ${{ env.working-directory }}

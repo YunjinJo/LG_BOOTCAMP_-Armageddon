@@ -179,6 +179,27 @@ void SetTransTable_app1(unsigned int uVaStart, unsigned int uVaEnd, unsigned int
 	}
 }
 
+void set_second_table(unsigned int uVaStart, unsigned int uVaEnd, unsigned int uPaStart, unsigned int attr, unsigned int ttbase)
+{
+	int i;
+	unsigned int *pTT1;
+	unsigned int *pTT2;
+	unsigned int nNumOfSec;
+
+	pTT1 = (unsigned int *) ttbase + (uVaStart>>20);
+	pTT2 = (unsigned int *) ((*pTT1)&(~0x1ff)) + ((uVaStart&0xfff00fff)>>12);
+
+
+	uPaStart &= ~0xfff;
+	uVaStart &= ~0xfff;
+	nNumOfSec = (0x100 + (uVaEnd>>12) - (uVaStart>>12))%0x100;
+
+	for(i = 0; i <= nNumOfSec; i++)
+	{
+		*pTT2++ = attr|(3<<4)|(uPaStart + (i << 12));
+	}
+}
+
 void set_second_table_address_App0(unsigned int uVaStart)
 {
 	unsigned int* pTT;

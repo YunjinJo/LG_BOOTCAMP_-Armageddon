@@ -102,5 +102,5 @@ void demand_paging(unsigned int fault_addr)
     if(page_cnt >= MAX_PAGE) {
         swap_flag = 1;
     }
-
+    CoInvalidateMainTlb();
 }   

@@ -187,6 +187,19 @@ void Lcd_Clr_Screen(void)
 	}
 }
 
+void Lcd_Clr_Screen_left_half(void)
+{
+	int x, y;
+
+	for (y = 0; y < ArrWinInfo[Selected_win].v_sizey; y++)
+	{
+		for (x = 0; x < ArrWinInfo[Selected_win].v_sizex/2; x++)
+		{
+			Lcd_Put_Pixel(x, y, 0xffe0);
+		}
+	}
+}
+
 void Lcd_Draw_Back_Color(int color)
 {
      int x,y;

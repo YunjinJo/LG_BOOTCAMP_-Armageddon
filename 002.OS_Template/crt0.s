@@ -56,14 +56,15 @@ HandlerUndef:
 	ldmfd	sp!,{r0-r3, r12, lr}
 	subs	pc, lr, #4
 
-	.extern demand_paging
+	.extern demand_page_PABT
+	.extern demand_page_DABT
 HandlerDabort:
 	stmfd	sp!,{r0-r3, r12, lr}
 
 	mrc 	p15, 0, r0, c5, c0, 0  @ save dfsr
 	ldr		r1, =0x140f
 	and		r0, r0, r1
-	cmp		r0, #0xf  @ check page fault
+	cmp		r0, #0x7  @ check page fault
 	beq		1f
 
 	sub 	r0, lr, #8
@@ -71,11 +72,11 @@ HandlerDabort:
 	and		r1, r1, #0x1f
 	bl		Dabort_Handler
 	ldmfd	sp!,{r0-r3, r12, lr}
-	subs	pc, lr, #4
+	subs	pc, lr, #8
 
 1:
 	mrc		p15, 0, r0, c6, c0, 0 @ save fault_addr
-	blx		demand_paging
+	blx		demand_page_DABT
 	ldmfd	sp!, {r0-r3, r12, lr}
 	subs	pc, lr, #8	@ return
 
@@ -85,7 +86,7 @@ HandlerPabort:
 	mrc p15, 0, r0, c5, c0, 1 @ save ifsr
 	ldr	r1, =0x140f
 	and	r0, r0, r1
-	cmp	r0, #0xf  @ check page fault
+	cmp	r0, #0x7  @ check page fault
 	beq		2f
 
 	@ 기존 P ABT
@@ -98,7 +99,7 @@ HandlerPabort:
 
 2:
 	mrc	p15, 0, r0, c6, c0, 2 @ save fault_addr
-	blx	demand_paging
+	blx	demand_page_PABT
 	ldmfd sp!, {r0-r3, r12, lr}
 	subs pc, lr, #4	@ return
 

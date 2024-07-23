@@ -17,7 +17,6 @@ void Main(void) {
 	for (;;) {
 
 		input_flag = Get_Input_Flag();
-
 		if (!input_flag) {
 			Draw_Board_State();
 			Draw_Red_Dot(GO_BOARD_OFFSET_X + cur_x * GO_BOARD_SPACE,

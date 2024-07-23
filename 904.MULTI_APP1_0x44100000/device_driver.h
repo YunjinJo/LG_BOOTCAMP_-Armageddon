@@ -29,6 +29,7 @@ extern int Uart1_GetIntNum(void);
 
 extern void Lcd_Printf(int x, int y, int color, int bkcolor, int zx, int zy, char *fmt,...);
 void Lcd_Clr_Screen(void);
+void Lcd_Clr_Screen_left_half(void);
 extern void Lcd_Draw_Back_Color(int color);
 
 extern unsigned int Get_Input_Flag(void);

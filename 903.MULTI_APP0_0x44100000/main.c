@@ -22,6 +22,7 @@ void Main(void) {
 //			Credit_Mode();
 //		}
 
+
 		if (!input_flag) {
 			Draw_Board_State();
 			Draw_Red_Dot(GO_BOARD_OFFSET_X + cur_x * GO_BOARD_SPACE,

@@ -21,7 +21,7 @@ extern void Uart1_Send_Byte(char data);
 extern void Uart1_Send_String(const char *pt);
 extern void Uart1_Printf(const char *fmt,...);
 extern char SVC_Uart1_Get_Char(void);
-extern char Uart1_Get_Pressed(void);
+extern char SVC_Uart1_Get_Pressed(void);
 extern int Uart1_GetIntNum(void);
 
 // key.c

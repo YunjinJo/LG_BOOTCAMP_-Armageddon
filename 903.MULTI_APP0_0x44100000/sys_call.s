@@ -78,6 +78,11 @@ SVC_Uart1_Get_Char:
 	svc 	17
 	bx		lr
 
+	.global SVC_Uart1_Get_Pressed
+SVC_Uart1_Get_Pressed:
+	svc		19
+	bx		lr
+
 
 
 

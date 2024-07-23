@@ -1,5 +1,6 @@
 #include "Device_Driver.h"
 #include "board_info.h"
+#include "4412_addr.h"
 
 void Main(void) {
 	Draw_Board_State();
@@ -12,58 +13,45 @@ void Main(void) {
 
 	SVC_Lcd_Draw_Back_Color(GO_BOARD);
 	SVC_Uart_Printf(
-			"===== MOVE : W/A/S/D , SET : ENTER , CHANGE APP : Q =====\n\n");
+			"===== MOVE : W/A/S/D , SET : ENTER , CHANGE APP : / =====\n\n");
 	for (;;) {
 
 		input_flag = Get_Input_Flag();
-
-//		if(input_flag)
-//		{
-//			Credit_Mode();
-//		}
 
 		if (!input_flag) {
 			Draw_Board_State();
 			Draw_Red_Dot(GO_BOARD_OFFSET_X + cur_x * GO_BOARD_SPACE,
 			GO_BOARD_OFFSET_Y + cur_y * GO_BOARD_SPACE);
 
-			char arr_input;
-			arr_input = SVC_Uart1_Get_Char();
-//			SVC_Uart_Printf("choice: %c\n", arr_input);
+			char arr_input = 0;
+			while (!arr_input) {
+				arr_input = SVC_Uart1_Get_Pressed();
+			}
+
 			switch (arr_input) {
 			case 'w': //up
 			case 'W': //up
-//				SVC_Uart_Printf("UP CLICKED\n");
 				cur_y--;
 				break;
 			case 's': //down
 			case 'S':
-//				SVC_Uart_Printf("DOWN CLICKED\n");
 				cur_y++;
 				break;
 			case 'a': //left
 			case 'A':
-//				SVC_Uart_Printf("LEFT CLICKED\n");
 				cur_x--;
 				break;
 			case 'd': //right
 			case 'D':
-//				SVC_Uart_Printf("RIGHT CLICKED\n");
 				cur_x++;
 				break;
-			case 'q':
-			case 'Q':
+			case '/':
 				Toggle_Input_Flag();
 				input_flag = Get_Input_Flag();
 				SVC_Uart_Printf("=====INPUT FLAG is %d\n", input_flag);
 				break;
-//			case 'c':
-//			case 'C':
-//				Credit_Mode();
-//				break;
 
 			case 13: //ENTER
-//				SVC_Uart_Printf("ENTER CLICKED\n");
 				if (Check_Validate(cur_x, cur_y))
 					Add_Stone((STONE) {cur_color,cur_x,cur_y});
 							else {
@@ -82,12 +70,13 @@ void Main(void) {
 					break;
 				}
 
-				// 이전 state 가져옴
+			// adjust xy
 			cur_x = (cur_x > MAX_XY) ? MAX_XY : cur_x;
 			cur_x = (cur_x < 0) ? 0 : cur_x;
 			cur_y = (cur_y > MAX_XY) ? MAX_XY : cur_y;
 			cur_y = (cur_y < 0) ? 0 : cur_y;
 
+			// print winner on LCD & clean stones
 			if (game_end) {
 				Draw_Board_State();
 				game_end = 1 - game_end;
@@ -99,26 +88,30 @@ void Main(void) {
 				SVC_Uart_Printf("\nGAME END! WINNER : %s\n",
 						cur_color == BLACK ? "BLACK" : "WHITE\n");
 
-				arr_input = SVC_Uart1_Get_Char();
+				arr_input = 0;
+				while (!arr_input) {
+
+					arr_input = SVC_Uart1_Get_Pressed();
+				}
+
 				Clean_Stones();
 				SVC_Uart_Printf(
-						"===== MOVE : W/A/S/D , SET : ENTER , CHANGE APP : Q =====\n\n");
+						"===== MOVE : W/A/S/D , SET : ENTER , CHANGE APP : / =====\n\n");
 			}
 
 		}
+
+		else { // inputFlag == 1
+			Lcd_Printf(700, 0, YELLOW, BLACK, 2, 2, "Omok App Waiting");
+			Lcd_Printf(700, 40, YELLOW, BLACK, 2, 2, "Press '/' to switch");
+			Delay(DELAY);
+			Lcd_Printf(700, 0, BLACK, YELLOW, 2, 2, "Omok App Waiting");
+			Lcd_Printf(700, 40, BLACK, YELLOW, 2, 2, "Press '/' to switch");
+			Delay(DELAY);
+
+		}
+
 	}
 
 }
 
-//void Credit_Mode() {
-//	unsigned int height = LCD_HEIGHT / 2;
-//	for (;;) {
-//
-//		SVC_Lcd_Clr_Screen();
-//		Lcd_Printf(LCD_WIDTH / 2 - 200, height, WHITE, BLACK, 2, 2,
-//				"THANK YOU");
-//		height -= 20;
-//		Delay(DELAY);
-//	}
-//
-//}

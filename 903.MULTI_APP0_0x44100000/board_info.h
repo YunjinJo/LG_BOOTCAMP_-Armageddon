@@ -46,8 +46,9 @@ int Count_In_Direction(int x, int y, int dx, int dy, unsigned int color);
 int Check_Validate(int x, int y);
 int Check_Win(int x, int y, unsigned int color);
 void Draw_Stone(STONE s);
-void Draw_Board_State();
+void Draw_Board_State(void);
 void Draw_Red_Dot(unsigned int x_pixel, unsigned int y_pixel);;
 void Clean_Stones(void);
+void Waiting_Mode(void);
 
 #endif // BOARD_INFO_H

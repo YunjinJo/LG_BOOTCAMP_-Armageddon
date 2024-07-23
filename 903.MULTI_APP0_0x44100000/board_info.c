@@ -98,3 +98,11 @@ void Draw_Board_State() {
 		Draw_Stone(stone_arr[i]);
 	}
 }
+
+void Waiting_Mode() {
+	unsigned int height = 50;
+	Lcd_Printf(LCD_WIDTH / 2 + 200, height, WHITE, BLACK, 2, 2, "OMOK WAITING");
+	Delay(DELAY);
+	Lcd_Printf(LCD_WIDTH / 2 + 200, height, BLACK, WHITE, 2, 2, "OMOK WAITING");
+	Delay(DELAY);
+}

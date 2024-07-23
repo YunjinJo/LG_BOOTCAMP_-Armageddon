@@ -16,7 +16,7 @@
 // TEST_T t2 = {6, 7, 8, 9, 10, 11};
 // TEST_T t3 = {12, 13, 14, 15, 16, 17};
 
-// #define DELAY	8000
+#define DELAY	8000
 
 
 void Main(void)
@@ -25,13 +25,11 @@ void Main(void)
 
 	MemoList memo = { .file_cnt = 0 };
     
-	char choice;
-    char content[MAX_CONTENT_LENGTH];
-
 	unsigned int inputFlag = 0;
 
 	for(;;)
 	{
+		char choice = 0;
 		inputFlag = Get_Input_Flag();
 		char filename[MAX_FILENAME_LENGTH];
 		filename[0] = '\0';
@@ -39,8 +37,8 @@ void Main(void)
 		// Uart_Printf("inputflag = %d\n", inputFlag);
 		
 		if (inputFlag) {
+			
 			displayFiles(&memo);
-
 			// Lcd_Printf(850, 490, WHITE, BLACK, 1, 1, "<Manual>");
 			// Lcd_Printf(850, 510, WHITE, BLACK, 1, 1, "1. Add File");
 			// Lcd_Printf(850, 530, WHITE, BLACK, 1, 1, "2. Read File");
@@ -52,50 +50,62 @@ void Main(void)
 			Lcd_Printf(740, 520, WHITE, BLACK, 2, 2, "3. Delete File");
 			Lcd_Printf(740, 560, WHITE, BLACK, 2, 2, "4. Close App");
 
+			while (!choice) {
+				choice = Uart1_Get_Pressed();
+			}
 			// Uart_Printf("Enter your choice: ");
-			
-			choice = Uart1_Get_Char();
+			// choice = Uart1_Get_Char();
+			Uart_Printf("get pressed: %c\n", choice);
 			ECommand command;
 			switch (choice) {
-				case '1':
-					command = ADD;
-					// Uart_Printf("%d. Add File\n", choice - '1' + 1);
-					// Uart_Printf("Enter filename to add: ");
-					// Uart1_GetString(filename);
-					writeFilename(&memo, filename, command);
-					// Uart_Printf("Enter content: ");
-					// Uart1_GetString(content);
-					addFile(&memo, filename, "");
-					// Uart_Printf("filename: %s\ncontent: %s\n", filename, content);
-					break;
-				case '2':
-					command = READ;
-					// Uart_Printf("%d. Read File\n", choice - '1' + 1);
-					// Uart_Printf("Enter filename to read: ");
-					// Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Enter filename to read: ");
-					// Lcd_Printf(0, 560, WHITE, BLACK, 2, 2, "Enter filename to read: ");
-					// Uart1_GetString(filename);
-					writeFilename(&memo, filename, command);
-					readFile(&memo, filename);
-					break;
-				case '3':
-					command = DELETE;
-					// Uart_Printf("%d. Delete File\n", choice - '1' + 1);
-					// Uart_Printf("Enter filename to delete: ");
-					// Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Enter filename to delete: ");	
-					// Lcd_Printf(0, 560, WHITE, BLACK, 2, 2, "Enter filename to delete: ");	
-					writeFilename(&memo, filename, command);
-					deleteFile(&memo, filename);
-					break;
-				case '4':
-					// Uart_Printf("%d. Close App\n", choice - '1' + 1);
-					Toggle_Input_Flag();
-					break;
-				default:
-					// Uart_Printf("Invalid choice. Please try again.\n");
-					break;
-			}
+			case '1':
+				command = ADD;
+				// Uart_Printf("%d. Add File\n", choice - '1' + 1);
+				// Uart_Printf("Enter filename to add: ");
+				// Uart1_GetString(filename);
+				writeFilename(&memo, filename, command);
+				// Uart_Printf("Enter content: ");
+				// Uart1_GetString(content);
+				addFile(&memo, filename, "");
+				// Uart_Printf("filename: %s\ncontent: %s\n", filename, content);
+				break;
+			case '2':
+				command = READ;
+				// Uart_Printf("%d. Read File\n", choice - '1' + 1);
+				// Uart_Printf("Enter filename to read: ");
+				// Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Enter filename to read: ");
+				// Lcd_Printf(0, 560, WHITE, BLACK, 2, 2, "Enter filename to read: ");
+				// Uart1_GetString(filename);
+				writeFilename(&memo, filename, command);
+				readFile(&memo, filename);
+				break;
+			case '3':
+				command = DELETE;
+				// Uart_Printf("%d. Delete File\n", choice - '1' + 1);
+				// Uart_Printf("Enter filename to delete: ");
+				// Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Enter filename to delete: ");	
+				// Lcd_Printf(0, 560, WHITE, BLACK, 2, 2, "Enter filename to delete: ");	
+				writeFilename(&memo, filename, command);
+				deleteFile(&memo, filename);
+				break;
+			case '/':
+				// Uart_Printf("%d. Close App\n", choice - '1' + 1);
+				Toggle_Input_Flag();
+				break;
+			default:
+				// Uart_Printf("Invalid choice. Please try again.\n");
+				break;
+			
+			} 
+		} else { // inputFlag == 0
+			Delay(DELAY);
+			Lcd_Printf(700, 0, YELLOW, BLACK, 2, 2, "Notepad App Waiting");
+			Lcd_Printf(700, 40, YELLOW, BLACK, 2, 2, "Press '/' to switch");
+			Delay(DELAY);
+			Lcd_Printf(700, 0, BLACK, YELLOW, 2, 2, "Notepad App Waiting");
+			Lcd_Printf(700, 40, BLACK, YELLOW, 2, 2, "Press '/' to switch");
 		}
+			
 
 		// Lcd_Printf(600, 300, WHITE, BLACK, 1, 1, "test lcd_printf");
 		// Lcd_Printf(600, 350, WHITE, BLACK, 1, 1, "test2 lcd_printf");
@@ -109,6 +119,6 @@ void Main(void)
 		// Uart_Printf("4\n");
 		// Delay(DELAY);
 		// Uart_Printf("5\n");
-	}
+	} 
 
 }

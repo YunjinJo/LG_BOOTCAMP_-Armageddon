@@ -50,3 +50,8 @@ Lcd_Draw_Back_Color:
 Uart1_Get_Char:
 	svc 17
 	bx lr
+
+	.global Uart1_Get_Pressed
+Uart1_Get_Pressed:
+	svc 19
+	bx lr

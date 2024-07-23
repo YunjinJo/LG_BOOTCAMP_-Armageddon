@@ -73,6 +73,7 @@ void * SVC_Handler[] = {
 	(void *) Lcd_Draw_Bar,        				//16
 	(void *) Uart1_Get_Char,      				//17
 	(void *) Lcd_Clr_Screen_left_half, 			//18
+	(void *) Uart1_Get_Pressed, 				//19
 	};
 
 //void SVC_Handler(unsigned int addr, unsigned int mode)

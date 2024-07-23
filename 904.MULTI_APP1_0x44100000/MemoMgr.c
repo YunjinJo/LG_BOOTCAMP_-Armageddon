@@ -69,7 +69,11 @@ void writeFile(MemoList * memo, int index, ECommand command)
     
     char x;
     while (1) {
-        x = Uart1_Get_Char();
+        x = 0;
+        // x = Uart1_Get_Char();
+        while (!x) {
+            x = Uart1_Get_Pressed();
+        }
         // Uart_Printf("input char : %c\n", x);
         
         if (x == '\x1B') {
@@ -104,7 +108,11 @@ void writeFile(MemoList * memo, int index, ECommand command)
             Lcd_Printf(400, 520, WHITE, BLACK, 2, 2, "Click 'w' to save changes");
             Lcd_Printf(400, 560, WHITE, BLACK, 2, 2, "Click other to return to Insert mode");
             Lcd_Printf(20, 560, WHITE, BLACK, 2, 2, "Command Mode");
-            x = Uart1_Get_Char();
+            x = 0;
+            // x = Uart1_Get_Char();
+            while (!x) {
+                x = Uart1_Get_Pressed();
+            }
             if (x == 'q') {
                 if (command == ADD) {
                     deleteFile(memo, memo->files[index].filename);
@@ -145,14 +153,14 @@ void writeFile(MemoList * memo, int index, ECommand command)
     // Uart_Printf("Content has been modified.\n");
 
     // Update the LCD with the new content
-    Lcd_Clr_Screen();
-    Lcd_Printf(100, 100, WHITE, BLACK, 2, 2, "<%s>", memo->files[index].filename);
+    // Lcd_Clr_Screen();
+    // Lcd_Printf(100, 100, WHITE, BLACK, 2, 2, "<%s>", memo->files[index].filename);
     // Lcd_Printf(100, 150, WHITE, BLACK, 2, 2, "%s", memo->files[i].content);
-    printLines(memo->files[index].content);
+    // printLines(memo->files[index].content);
     // Lcd_Printf(850, 550, WHITE, BLACK, 1, 1, ":q    Cancel Changes");
     // Lcd_Printf(850, 570, WHITE, BLACK, 1, 1, ":w    Save Changes");    
-    Lcd_Printf(680, 520, WHITE, BLACK, 2, 2, ":q  Cancel Changes");
-    Lcd_Printf(680, 560, WHITE, BLACK, 2, 2, ":w  Save Changes");
+    // Lcd_Printf(680, 520, WHITE, BLACK, 2, 2, ":q  Cancel Changes");
+    // Lcd_Printf(680, 560, WHITE, BLACK, 2, 2, ":w  Save Changes");
 }
 
 void readFile(MemoList *memo, const char *filename) {
@@ -168,7 +176,11 @@ void readFile(MemoList *memo, const char *filename) {
             Lcd_Printf(780, 520, WHITE, BLACK, 2, 2, "0. Back");
             Lcd_Printf(780, 560, WHITE, BLACK, 2, 2, "1. Modify");
             while (1) {
-                command = Uart1_Get_Char();
+                command = 0;
+                // command = Uart1_Get_Char();
+                while (!command) {
+                    command = Uart1_Get_Pressed();
+                }
                 switch (command)
                 {
                 case '0':
@@ -232,9 +244,13 @@ void writeFilename(MemoList* memo, char * filename, ECommand e_command) {
 	displayFiles(memo);
 	// Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Enter filename to %s: ", command);
 	Lcd_Printf(0, 560, WHITE, BLACK, 2, 2, "Enter filename to %s: ", command);
-	char x;
+    char x;
 	while (1) {
-        x = Uart1_Get_Char();
+        x = 0;
+        // x = Uart1_Get_Char();
+        while (!x) {
+            x = Uart1_Get_Pressed();
+        }
         // Uart_Printf("input char : %c\n", x);
         
         if (x == '\x1B') {

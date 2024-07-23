@@ -24,6 +24,7 @@ void Main(void) {
 
 				SVC_Uart_Printf("=====MOVE : W/A/S/D , SET : ENTER=====\n\n");
 				char arr_input;
+				
 				arr_input = SVC_Uart1_Get_Char();
 
 				switch (arr_input) {

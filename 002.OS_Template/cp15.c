@@ -1,6 +1,7 @@
 #include "cp15.h"
 #include "option.h"
 #include "device_driver.h"
+#include "demand_page.h"
 
 /* PA conversion */
 
@@ -179,32 +180,10 @@ void SetTransTable_app1(unsigned int uVaStart, unsigned int uVaEnd, unsigned int
 	}
 }
 
-void set_second_table(unsigned int uVaStart, unsigned int uVaEnd, unsigned int uPaStart, unsigned int attr, unsigned int ttbase)
-{
-	int i;
-	unsigned int *pTT1;
-	unsigned int *pTT2;
-	unsigned int nNumOfSec;
-
-	pTT1 = (unsigned int *) ttbase + (uVaStart>>20);
-	pTT2 = (unsigned int *) ((*pTT1)&(~0x1ff)) + ((uVaStart&0xfff00fff)>>12);
-
-
-	uPaStart &= ~0xfff;
-	uVaStart &= ~0xfff;
-	nNumOfSec = (0x100 + (uVaEnd>>12) - (uVaStart>>12))%0x100;
-
-	for(i = 0; i <= nNumOfSec; i++)
-	{
-		*pTT2++ = attr|(3<<4)|(uPaStart + (i << 12));
-	}
-}
-
 void set_second_table_address_App0(unsigned int uVaStart)
 {
 	unsigned int* pTT;
-	uVaStart &= ~0xfffff;
-	pTT = (unsigned int *) 0x44001104; // 시작 주소
+	pTT = get_first_TT_addr(uVaStart, MMU_PAGE_TABLE_BASE); // 시작 주소
 	*pTT++ = 0x44040000 | 0x1; //0x44001104
 	*pTT++ = 0x44040400 | 0x1;//0x440011080
 	*pTT++ = 0x44040800| 0x1;//0x4400110c
@@ -213,8 +192,7 @@ void set_second_table_address_App0(unsigned int uVaStart)
 void set_second_table_address_App1(unsigned int uVaStart)
 {
 	unsigned int* pTT;
-	uVaStart &= ~0xfffff;
-	pTT = (unsigned int *) 0x44081104; // 시작 주소
+	pTT = get_first_TT_addr(uVaStart, MMU_PAGE_TABLE_BASE_APP1); // 시작 주소
 	*pTT++ = 0x440c0000 | 0x1; //0x44081104
 	*pTT++ = 0x440c0400 | 0x1;//0x44081108
 	*pTT++ = 0x440c0800 | 0x1;//0x4408110c
@@ -228,9 +206,10 @@ void init_second_table_descriptor_App(unsigned int PAGE_APP)
 	int next_section;
 
 	for (next_section = 0; next_section < 4; next_section++) {
-		pTT = (unsigned int *) PAGE_APP + (0x400 * next_section);
+		pTT = (unsigned int *) (PAGE_APP + (0x400 * next_section));
+		// Uart_Printf("\npTT : %X\n", (unsigned int ) pTT);
 		for (i=0; i<256; i++) {
-			*pTT++ = 0x2 |(WT_WBWA_PAGE);
+			*pTT++ = 0;
 		}
 	}
 }
@@ -372,7 +351,7 @@ static void CoTTSet_L1(void)
 	SetTransTable(MMU_PAGE_TABLE_BASE, MMU_PAGE_TABLE_LIMIT-1, MMU_PAGE_TABLE_BASE, RW_WBWA);
 
 	/* Free Memory */
-	SetTransTable(MMU_PAGE_TABLE_LIMIT, LCD_FB00_START_ADDR-1, MMU_PAGE_TABLE_LIMIT, RW_NCNB);
+	SetTransTable(MMU_PAGE_TABLE_LIMIT, LCD_FB00_START_ADDR-1, MMU_PAGE_TABLE_LIMIT, RW_WT);
 
 	/* LCD Frame Buffer */
 	SetTransTable(LCD_FB00_START_ADDR, LCD_FB01_START_ADDR-1, LCD_FB00_START_ADDR, RW_WT);
@@ -402,7 +381,7 @@ static void CoTTSet_L1L2(void)
 	SetTransTable(MMU_PAGE_TABLE_BASE, MMU_PAGE_TABLE_LIMIT-1, MMU_PAGE_TABLE_BASE, RW_WBWA);
 
 	/* Free Memory */
-	SetTransTable(MMU_PAGE_TABLE_LIMIT, LCD_FB00_START_ADDR-1, MMU_PAGE_TABLE_LIMIT, RW_NCNB);
+	SetTransTable(MMU_PAGE_TABLE_LIMIT, LCD_FB00_START_ADDR-1, MMU_PAGE_TABLE_LIMIT, RW_WT);
 
 	/* LCD Frame Buffer */
 	SetTransTable(LCD_FB00_START_ADDR, LCD_FB01_START_ADDR-1, LCD_FB00_START_ADDR, RW_WT);
@@ -432,7 +411,7 @@ void CoTTSet_L1L2_app1(void)
 	SetTransTable_app1(MMU_PAGE_TABLE_BASE, MMU_PAGE_TABLE_LIMIT-1, MMU_PAGE_TABLE_BASE, RW_WBWA); //RW_WBWA, RW_WT, RW_WT_WBWA
 
 	/* Free Memory */
-	SetTransTable_app1(MMU_PAGE_TABLE_LIMIT, LCD_FB00_START_ADDR-1, MMU_PAGE_TABLE_LIMIT, RW_WBWA); //RW_WBWA, RW_WT, RW_WT_WBWA
+	SetTransTable_app1(MMU_PAGE_TABLE_LIMIT, LCD_FB00_START_ADDR-1, MMU_PAGE_TABLE_LIMIT, RW_WT); //RW_WBWA, RW_WT, RW_WT_WBWA
 
 	/* LCD Frame Buffer */
 	SetTransTable_app1(LCD_FB00_START_ADDR, LCD_FB01_START_ADDR-1, LCD_FB00_START_ADDR, RW_WT);

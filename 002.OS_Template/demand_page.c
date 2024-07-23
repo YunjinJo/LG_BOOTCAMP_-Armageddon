@@ -83,7 +83,14 @@ void demand_paging(unsigned int fault_addr, unsigned int reason)
     if (swap_flag) {
         page_cnt %= MAX_PAGE;
         // 기존 2nd TT 에 접근 불가로 설정
-        second_TT_addr = page_info[page_cnt].second_TT_addr;
+        if (page_info[page_cnt].asid == 1) {
+            first_TT_addr = get_first_TT_addr(page_info[page_cnt].VA, MMU_PAGE_TABLE_BASE);
+        }
+        else if (page_info[page_cnt].asid == 2){
+            first_TT_addr = get_first_TT_addr(page_info[page_cnt].VA, MMU_PAGE_TABLE_BASE_APP1);
+        }
+
+        second_TT_addr = get_second_TT_addr(page_info[page_cnt].VA, *first_TT_addr);
         *second_TT_addr = 0;
 
         // page_info reason이 D ABT라면 backup
@@ -94,8 +101,13 @@ void demand_paging(unsigned int fault_addr, unsigned int reason)
     }
 
     // 1차 T/T 주소
-    first_TT_addr = get_first_TT_addr(fault_addr, MMU_PAGE_TABLE_BASE);
-
+    if (asid == 1) {
+        first_TT_addr = get_first_TT_addr(fault_addr, MMU_PAGE_TABLE_BASE);
+    }
+    else if (asid == 2) {
+        first_TT_addr = get_first_TT_addr(fault_addr, MMU_PAGE_TABLE_BASE_APP1);
+    }
+    
     // 2차 T/T 주소
     second_TT_addr = get_second_TT_addr(fault_addr, *first_TT_addr);
 

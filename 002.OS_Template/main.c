@@ -117,22 +117,22 @@ void Main(void)
 		App_Read(SECTOR_APP1, SIZE_APP0, RAM_APP1);
 	}
 #endif
-	pcb_init(RAM_APP0, STACK_BASE_APP0, STACK_BASE_APP1);
+	pcb_init(RAM_APP, STACK_BASE_APP0, STACK_BASE_APP1);
 //	for(;;)
 	{
 		
-		//SetTransTable(RAM_APP, (RAM_APP+SIZE_APP0-1), RAM_APP0, RW_WBWA | NG_ON);
+		// SetTransTable(RAM_APP, (RAM_APP+SIZE_APP0-1), RAM_APP0, RW_WBWA | NG_ON);
 		SetTransTable(STACK_LIMIT_APP0, STACK_BASE_APP0-1, STACK_LIMIT_APP0, RW_WBWA | NG_ON);
 		set_second_table_address_App0(RAM_APP);
 		init_second_table_descriptor_App(SND_PAGE_TABLE_BASE_APP0);
 
 
 		CoTTSet_L1L2_app1();
-		//SetTransTable_app1(RAM_APP, (RAM_APP+SIZE_APP1-1), RAM_APP1, RW_WBWA | NG_ON);
+		// SetTransTable_app1(RAM_APP, (RAM_APP+SIZE_APP1-1), RAM_APP1, RW_WBWA | NG_ON);
 		SetTransTable_app1(STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, RW_WBWA | NG_ON);
     
-		// set_second_table_address_App1(RAM_APP);
-		// init_second_table_descriptor_App(SND_PAGE_TABLE_BASE_APP1);
+		set_second_table_address_App1(RAM_APP);
+		init_second_table_descriptor_App(SND_PAGE_TABLE_BASE_APP1);
 		
 		CoInvalidateMainTlb();
 		start_app(SEL_APP0); // SEL_APP0 or SEL_APP1

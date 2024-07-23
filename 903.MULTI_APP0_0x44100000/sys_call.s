@@ -53,6 +53,21 @@ SVC_Lcd_Draw_Line:
 	svc		9
 	bx		lr
 
+	.global Lcd_Printf
+Lcd_Printf:
+	svc 10
+	bx lr
+
+	.global Get_Input_Flag
+Get_Input_Flag:
+	svc 14
+	bx lr
+
+	.global Toggle_Input_Flag
+Toggle_Input_Flag:
+	svc 15
+	bx lr
+
 	.global SVC_Lcd_Draw_Bar
 SVC_Lcd_Draw_Bar:
 	svc		16
@@ -62,4 +77,7 @@ SVC_Lcd_Draw_Bar:
 SVC_Uart1_Get_Char:
 	svc 	17
 	bx		lr
+
+
+
 

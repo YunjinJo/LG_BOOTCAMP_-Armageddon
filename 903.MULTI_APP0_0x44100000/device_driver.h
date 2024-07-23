@@ -69,7 +69,7 @@ extern void SVC_Lcd_Win_Init(int id,int en);
 extern void Lcd_Put_Pixel(int x,int y, unsigned short color);
 extern void * Lcd_Get_Pixel_Address(int x,int y);
 extern unsigned int Lcd_Get_Pixel(int x,int y);
-extern void Lcd_Clr_Screen(void);
+//extern void Lcd_Clr_Screen(void);
 extern void SVC_Lcd_Draw_Back_Color(int color);
 extern void Lcd_Get_Info_BMP(int * x, int  * y, const unsigned short int *fp);
 extern void Lcd_Draw_BMP(int x, int y, const unsigned short int *fp);
@@ -83,3 +83,6 @@ extern void Lcd_Draw_STACK(void);
 extern void Lcd_Printf(int x, int y, int color, int bkcolor, int zx, int zy, char *fmt,...);
 extern void SVC_Lcd_Draw_Bar(int x1, int y1, int x2, int y2, int color);
 extern void SVC_Lcd_Draw_Line(int x1,int y1,int x2,int y2,int color);
+
+extern unsigned int Get_Input_Flag(void);
+extern void Toggle_Input_Flag(void);

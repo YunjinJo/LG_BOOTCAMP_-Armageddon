@@ -66,7 +66,7 @@ void start_app(unsigned int sel_app) {
 		break;
 	}
 
-	//Timer0_Int_Delay(1,1);
+	Timer0_Int_Delay(1,1);
 	Uart_Printf("\nRUN APP!!!\n");
 	Run_App(RAM_APP, sel_base_stack);
 }
@@ -131,8 +131,8 @@ void Main(void)
 		//SetTransTable_app1(RAM_APP, (RAM_APP+SIZE_APP1-1), RAM_APP1, RW_WBWA | NG_ON);
 		SetTransTable_app1(STACK_LIMIT_APP1, STACK_BASE_APP1-1, STACK_LIMIT_APP1, RW_WBWA | NG_ON);
     
-		set_second_table_address_App1(RAM_APP);
-		init_second_table_descriptor_App(SND_PAGE_TABLE_BASE_APP1);
+		// set_second_table_address_App1(RAM_APP);
+		// init_second_table_descriptor_App(SND_PAGE_TABLE_BASE_APP1);
 		
 		CoInvalidateMainTlb();
 		start_app(SEL_APP0); // SEL_APP0 or SEL_APP1

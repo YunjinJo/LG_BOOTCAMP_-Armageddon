@@ -25,6 +25,11 @@ Uart1_GetString:
 Lcd_Clr_Screen:
 	svc 13
 	bx lr
+
+	.global Lcd_Clr_Screen_left_half
+Lcd_Clr_Screen_left_half:
+	svc 18
+	bx lr
 	
 	.global Get_Input_Flag
 Get_Input_Flag:
@@ -44,4 +49,9 @@ Lcd_Draw_Back_Color:
 	.global Uart1_Get_Char
 Uart1_Get_Char:
 	svc 17
+	bx lr
+
+	.global Uart1_Get_Pressed
+Uart1_Get_Pressed:
+	svc 19
 	bx lr

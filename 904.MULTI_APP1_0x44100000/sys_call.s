@@ -40,3 +40,8 @@ Toggle_Input_Flag:
 Lcd_Draw_Back_Color:
 	svc 8
 	bx lr
+
+	.global Uart1_Get_Char
+Uart1_Get_Char:
+	svc 17
+	bx lr

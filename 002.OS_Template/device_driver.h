@@ -129,6 +129,7 @@ extern void Lcd_Put_Pixel(int x,int y, unsigned short color);
 extern void * Lcd_Get_Pixel_Address(int x,int y);
 extern unsigned int Lcd_Get_Pixel(int x,int y);
 extern void Lcd_Clr_Screen(void);
+extern void Lcd_Clr_Screen_left_half(void);
 extern void Lcd_Draw_Back_Color(int color);
 extern void Lcd_Get_Info_BMP(int * x, int  * y, const unsigned short int *fp);
 extern void Lcd_Draw_BMP(int x, int y, const unsigned short int *fp);

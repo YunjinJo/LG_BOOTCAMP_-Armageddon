@@ -63,6 +63,7 @@ void writeFile(MemoList * memo, int index, ECommand command)
     printLines(new_content);
     // Lcd_Printf(850, 550, WHITE, BLACK, 1, 1, ":q    Cancel Changes");
     // Lcd_Printf(850, 570, WHITE, BLACK, 1, 1, ":w    Save Changes");
+    Lcd_Printf(20, 560, WHITE, BLACK, 2, 2, "Insert Mode");
     Lcd_Printf(680, 520, WHITE, BLACK, 2, 2, ":q  Cancel Changes");
     Lcd_Printf(680, 560, WHITE, BLACK, 2, 2, ":w  Save Changes");
     
@@ -87,6 +88,7 @@ void writeFile(MemoList * memo, int index, ECommand command)
                 printLines(new_content);
                 // Lcd_Printf(850, 550, WHITE, BLACK, 1, 1, ":q    Cancel Changes");
                 // Lcd_Printf(850, 570, WHITE, BLACK, 1, 1, ":w    Save Changes");
+                Lcd_Printf(20, 560, WHITE, BLACK, 2, 2, "Insert Mode");
                 Lcd_Printf(680, 520, WHITE, BLACK, 2, 2, ":q  Cancel Changes");
                 Lcd_Printf(680, 560, WHITE, BLACK, 2, 2, ":w  Save Changes");
             }
@@ -95,10 +97,13 @@ void writeFile(MemoList * memo, int index, ECommand command)
             // Lcd_Printf(100, 530, WHITE, BLACK, 1, 1, "Click q to cancel changes");
             // Lcd_Printf(100, 550, WHITE, BLACK, 1, 1, "Click w to save changes");
             // Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Click other to return to edit mode");
-            Lcd_Printf(20, 440, WHITE, BLACK, 2, 2, "Command Mode");
-            Lcd_Printf(20, 480, WHITE, BLACK, 2, 2, "Click q to cancel changes");
-            Lcd_Printf(20, 520, WHITE, BLACK, 2, 2, "Click w to save changes");
-            Lcd_Printf(20, 560, WHITE, BLACK, 2, 2, "Click other to return to edit mode");
+            Lcd_Clr_Screen();
+            Lcd_Printf(100, 100, WHITE, BLACK, 2, 2, "<%s>", memo->files[index].filename);
+            printLines(new_content);
+            Lcd_Printf(400, 480, WHITE, BLACK, 2, 2, "Click 'q' to cancel changes");
+            Lcd_Printf(400, 520, WHITE, BLACK, 2, 2, "Click 'w' to save changes");
+            Lcd_Printf(400, 560, WHITE, BLACK, 2, 2, "Click other to return to Insert mode");
+            Lcd_Printf(20, 560, WHITE, BLACK, 2, 2, "Command Mode");
             x = Uart1_Get_Char();
             if (x == 'q') {
                 if (command == ADD) {
@@ -111,6 +116,7 @@ void writeFile(MemoList * memo, int index, ECommand command)
                 Lcd_Clr_Screen();
                 Lcd_Printf(100, 100, WHITE, BLACK, 2, 2, "<%s>", memo->files[index].filename);
                 printLines(new_content);
+                Lcd_Printf(20, 560, WHITE, BLACK, 2, 2, "Insert Mode");
                 Lcd_Printf(680, 520, WHITE, BLACK, 2, 2, ":q  Cancel Changes");
                 Lcd_Printf(680, 560, WHITE, BLACK, 2, 2, ":w  Save Changes");
             }
@@ -126,6 +132,7 @@ void writeFile(MemoList * memo, int index, ECommand command)
                 printLines(new_content);
                 // Lcd_Printf(850, 550, WHITE, BLACK, 1, 1, ":q    Cancel Changes");
                 // Lcd_Printf(850, 570, WHITE, BLACK, 1, 1, ":w    Save Changes");
+                Lcd_Printf(20, 560, WHITE, BLACK, 2, 2, "Insert Mode");
                 Lcd_Printf(680, 520, WHITE, BLACK, 2, 2, ":q  Cancel Changes");
                 Lcd_Printf(680, 560, WHITE, BLACK, 2, 2, ":w  Save Changes");
             }
@@ -190,10 +197,13 @@ void listFiles(const MemoList *memo) {
 void displayFiles(const MemoList *memo) {
     // Lcd_Draw_Back_Color(BLACK);
     Lcd_Clr_Screen();
+    // Lcd_Clr_Screen_left_half();
 
     unsigned int i;
     for (i = 0; i < memo->file_cnt; ++i) {
-        Lcd_Printf(0, 40*i, WHITE, BLACK, 2, 2, "File %u: %s", i + 1, memo->files[i].filename);
+        // Lcd_Printf(0, 40*i, WHITE, BLACK, 2, 2, "File %u: %s", i + 1, memo->files[i].filename);
+        // Lcd_Printf(0, 40*i, BLACK, YELLOW, 2, 2, "%s", memo->files[i].filename);
+        Lcd_Printf(0, 40*i, WHITE, BLACK, 2, 2, "%s", memo->files[i].filename);
     }
 }
 

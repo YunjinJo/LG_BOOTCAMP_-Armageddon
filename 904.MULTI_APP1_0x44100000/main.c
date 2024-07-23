@@ -46,7 +46,7 @@ void Main(void)
 			// Lcd_Printf(850, 530, WHITE, BLACK, 1, 1, "2. Read File");
 			// Lcd_Printf(850, 550, WHITE, BLACK, 1, 1, "3. Delete File");
 			// Lcd_Printf(850, 570, WHITE, BLACK, 1, 1, "4. Close App");
-			Lcd_Printf(740, 400, WHITE, BLACK, 2, 2, "<Manual>");
+			Lcd_Printf(740, 400, WHITE, BLACK, 2, 2, "<Notepad Manual>");
 			Lcd_Printf(740, 440, WHITE, BLACK, 2, 2, "1. Add File");
 			Lcd_Printf(740, 480, WHITE, BLACK, 2, 2, "2. Read File");
 			Lcd_Printf(740, 520, WHITE, BLACK, 2, 2, "3. Delete File");

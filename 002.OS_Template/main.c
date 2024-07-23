@@ -65,7 +65,7 @@ void start_app(unsigned int sel_app) {
 		break;
 	}
 
-	// Timer0_Int_Delay(1,1);
+	Timer0_Int_Delay(1,1);
 	Uart_Printf("\nRUN APP!!!\n");
 	Run_App(RAM_APP0, sel_base_stack);
 }
@@ -132,10 +132,10 @@ void Main(void)
 		//set_second_table_address_App1(RAM_APP0);
 		//init_second_table_descriptor_App(SND_PAGE_TABLE_BASE_APP1);
 
-		set_second_table(RAM_APP0 + 0*MMU_PAGE_TABLE_SIZE, (RAM_APP0 + 1*MMU_PAGE_TABLE_SIZE - 1), DEMAND_PAGE_START_ADDR, 0x0, MMU_PAGE_TABLE_BASE);
-		set_second_table(RAM_APP0 + 1*MMU_PAGE_TABLE_SIZE, (RAM_APP0 + 2*MMU_PAGE_TABLE_SIZE - 1), DEMAND_PAGE_START_ADDR, 0x0, MMU_PAGE_TABLE_BASE);
-		set_second_table(RAM_APP0 + 2*MMU_PAGE_TABLE_SIZE, (RAM_APP0 + 3*MMU_PAGE_TABLE_SIZE - 1), DEMAND_PAGE_START_ADDR, 0x0, MMU_PAGE_TABLE_BASE);
-		set_second_table(RAM_APP0 + 3*MMU_PAGE_TABLE_SIZE, (RAM_APP0 + SIZE_APP0 - 1), DEMAND_PAGE_START_ADDR, 0x0, MMU_PAGE_TABLE_BASE);
+//		set_second_table(RAM_APP0 + 0*MMU_PAGE_TABLE_SIZE, (RAM_APP0 + 1*MMU_PAGE_TABLE_SIZE - 1), DEMAND_PAGE_START_ADDR, 0x0, MMU_PAGE_TABLE_BASE);
+//		set_second_table(RAM_APP0 + 1*MMU_PAGE_TABLE_SIZE, (RAM_APP0 + 2*MMU_PAGE_TABLE_SIZE - 1), DEMAND_PAGE_START_ADDR, 0x0, MMU_PAGE_TABLE_BASE);
+//		set_second_table(RAM_APP0 + 2*MMU_PAGE_TABLE_SIZE, (RAM_APP0 + 3*MMU_PAGE_TABLE_SIZE - 1), DEMAND_PAGE_START_ADDR, 0x0, MMU_PAGE_TABLE_BASE);
+//		set_second_table(RAM_APP0 + 3*MMU_PAGE_TABLE_SIZE, (RAM_APP0 + SIZE_APP0 - 1), DEMAND_PAGE_START_ADDR, 0x0, MMU_PAGE_TABLE_BASE);
 		
 		CoInvalidateMainTlb();
 		start_app(SEL_APP0); // SEL_APP0 or SEL_APP1

@@ -5,6 +5,7 @@ void addFile(MemoList *memo, const char *filename, const char *content) {
         strncpy(memo->files[memo->file_cnt].filename, filename, MAX_FILENAME_LENGTH);
         strncpy(memo->files[memo->file_cnt].content, content, MAX_CONTENT_LENGTH);
         memo->file_cnt++;
+        writeFile(memo, memo->file_cnt-1, 1);
     } else {
         Uart_Printf("Maximum file limit reached.\n");
     }
@@ -26,33 +27,143 @@ void deleteFile(MemoList *memo, const char *filename) {
     Uart_Printf("File not found.\n");
 }
 
-void readFile(const MemoList *memo, const char *filename) {
-    unsigned int i;
-    unsigned int command;
-    char modified_content[MAX_CONTENT_LENGTH];
+void printLines(char * content) 
+{
+    // Display content in chunks of 20 characters
+    int line_height = 30; // Adjust this as needed
+    int start_index = 0;
+    while (start_index < strlen(content)) {
+        char line[MAX_CONTENT_LENGTH];
+        int length = 50; // Number of characters per line
+        if (strlen(content) - start_index < length) {
+            length = strlen(content) - start_index;
+        }
+        strncpy(line, content + start_index, length);
+        line[length] = '\0'; // Ensure null-termination
+
+        Lcd_Printf(100, 150 + (start_index / 50) * line_height, WHITE, BLACK, 2, 2, "%s", line);
+        start_index += 50;
+    }
+}
+
+void writeFile(MemoList * memo, int index, int caller)
+{
+    char new_content[MAX_CONTENT_LENGTH];
+    
+    // Initialize new_content with current content
+    strncpy(new_content, memo->files[index].content, MAX_CONTENT_LENGTH);
+    new_content[MAX_CONTENT_LENGTH - 1] = '\0'; // Ensure null-termination
+
+    // Display the current content
+    Lcd_Clr_Screen();
+    Lcd_Printf(100, 100, WHITE, BLACK, 2, 2, "<%s>", memo->files[index].filename);
+    // Lcd_Printf(100, 150, WHITE, BLACK, 2, 2, "%s", new_content);
+    printLines(new_content);
+    // Lcd_Printf(850, 550, WHITE, BLACK, 1, 1, ":q    Cancel Changes");
+    // Lcd_Printf(850, 570, WHITE, BLACK, 1, 1, ":w    Save Changes");
+    Lcd_Printf(680, 520, WHITE, BLACK, 2, 2, ":q  Cancel Changes");
+    Lcd_Printf(680, 560, WHITE, BLACK, 2, 2, ":w  Save Changes");
+    
+    char x;
+    while (1) {
+        x = Uart1_Get_Char();
+        Uart_Printf("input char : %c\n", x);
+        
+        if (x == '\b') { // Backspace key
+            Uart_Printf("backspace entered\n");
+            size_t len = strlen(new_content);
+            if (len > 0) {
+                new_content[len - 1] = '\0'; // Remove the last character
+                // Update LCD
+                Lcd_Clr_Screen();
+                Lcd_Printf(100, 100, WHITE, BLACK, 2, 2, "<%s>", memo->files[index].filename);
+                // Lcd_Printf(100, 150, WHITE, BLACK, 2, 2, "%s", new_content);
+                printLines(new_content);
+                // Lcd_Printf(850, 550, WHITE, BLACK, 1, 1, ":q    Cancel Changes");
+                // Lcd_Printf(850, 570, WHITE, BLACK, 1, 1, ":w    Save Changes");
+                Lcd_Printf(680, 520, WHITE, BLACK, 2, 2, ":q  Cancel Changes");
+                Lcd_Printf(680, 560, WHITE, BLACK, 2, 2, ":w  Save Changes");
+            }
+        } else if (x == ':') { 
+            // Lcd_Printf(100, 510, WHITE, BLACK, 1, 1, "Command Mode");
+            // Lcd_Printf(100, 530, WHITE, BLACK, 1, 1, "Click q to cancel changes");
+            // Lcd_Printf(100, 550, WHITE, BLACK, 1, 1, "Click w to save changes");
+            // Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Click other to return to edit mode");
+            Lcd_Printf(20, 440, WHITE, BLACK, 2, 2, "Command Mode");
+            Lcd_Printf(20, 480, WHITE, BLACK, 2, 2, "Click q to cancel changes");
+            Lcd_Printf(20, 520, WHITE, BLACK, 2, 2, "Click w to save changes");
+            Lcd_Printf(20, 560, WHITE, BLACK, 2, 2, "Click other to return to edit mode");
+            x = Uart1_Get_Char();
+            if (x == 'q') {
+                if (caller == 1) {
+                    deleteFile(memo, memo->files[index].filename);
+                }
+                return;
+            } else if (x == 'w') { 
+                break;
+            } else {
+                Lcd_Clr_Screen();
+                Lcd_Printf(100, 100, WHITE, BLACK, 2, 2, "<%s>", memo->files[index].filename);
+                printLines(new_content);
+                Lcd_Printf(680, 520, WHITE, BLACK, 2, 2, ":q  Cancel Changes");
+                Lcd_Printf(680, 560, WHITE, BLACK, 2, 2, ":w  Save Changes");
+            }
+        } else { // Other characters
+            size_t len = strlen(new_content);
+            if (len < MAX_CONTENT_LENGTH - 1) {
+                new_content[len] = x; // Add new character
+                new_content[len + 1] = '\0'; // Null-terminate the string
+                // Update LCD
+                Lcd_Clr_Screen();
+                Lcd_Printf(100, 100, WHITE, BLACK, 2, 2, "<%s>", memo->files[index].filename);
+                // Lcd_Printf(100, 150, WHITE, BLACK, 2, 2, "%s", new_content);
+                printLines(new_content);
+                // Lcd_Printf(850, 550, WHITE, BLACK, 1, 1, ":q    Cancel Changes");
+                // Lcd_Printf(850, 570, WHITE, BLACK, 1, 1, ":w    Save Changes");
+                Lcd_Printf(680, 520, WHITE, BLACK, 2, 2, ":q  Cancel Changes");
+                Lcd_Printf(680, 560, WHITE, BLACK, 2, 2, ":w  Save Changes");
+            }
+        }
+    }
+
+    // Save modified content back to memo->files[i].content
+    strncpy(memo->files[index].content, new_content, MAX_CONTENT_LENGTH - 1);
+    memo->files[index].content[MAX_CONTENT_LENGTH - 1] = '\0'; // Ensure null-termination
+    Uart_Printf("Content has been modified.\n");
+
+    // Update the LCD with the new content
+    Lcd_Clr_Screen();
+    Lcd_Printf(100, 100, WHITE, BLACK, 2, 2, "<%s>", memo->files[index].filename);
+    // Lcd_Printf(100, 150, WHITE, BLACK, 2, 2, "%s", memo->files[i].content);
+    printLines(memo->files[index].content);
+    // Lcd_Printf(850, 550, WHITE, BLACK, 1, 1, ":q    Cancel Changes");
+    // Lcd_Printf(850, 570, WHITE, BLACK, 1, 1, ":w    Save Changes");    
+    Lcd_Printf(680, 520, WHITE, BLACK, 2, 2, ":q  Cancel Changes");
+    Lcd_Printf(680, 560, WHITE, BLACK, 2, 2, ":w  Save Changes");
+}
+
+void readFile(MemoList *memo, const char *filename) {
+    int i;
+    char command;
     for (i = 0; i < memo->file_cnt; ++i) {
         if (strcmp(memo->files[i].filename, filename) == 0) {
-            // Uart_Printf("Content of %s:\n%s\n", filename, memo->files[i].content);
             Lcd_Clr_Screen();
-            Lcd_Printf(100, 100, WHITE, BLACK, 2, 2, "<%s>", filename);
-            Lcd_Printf(100, 150, WHITE, BLACK, 2, 2, "%s", memo->files[i].content);
-            Lcd_Printf(850, 550, WHITE, BLACK, 1, 1, "0. Back");
-            Lcd_Printf(850, 570, WHITE, BLACK, 1, 1, "1. Modify");
-            
-            while(1) {
-                command = Uart1_GetIntNum();
+            printLines(memo->files[i].content);
+            // Lcd_Printf(850, 550, WHITE, BLACK, 1, 1, "0. Back");
+            // Lcd_Printf(850, 570, WHITE, BLACK, 1, 1, "1. Modify");
+            Lcd_Printf(680, 520, WHITE, BLACK, 2, 2, "0. Back");
+            Lcd_Printf(680, 560, WHITE, BLACK, 2, 2, "1. Modify");
+            while (1) {
+                command = Uart1_Get_Char();
                 switch (command)
                 {
-                case 0:
+                case '0':
                     return;
-                    break;
-                // case 1:
-                //     Uart_Printf("Modify content: %s\n", memo->files[i].content);
-				// 	Uart1_GetString(modified_content);
-                //     deleteFile(&memo, filename);
-                //     addFile(&memo, filename, modified_content);
+                case '1':
+                    writeFile(memo, i, 2);    
+                    return;
                 default:
-                    // Uart_Printf("Invalid choice. Please try again.\n");
+                    Uart_Printf("Invalid choice. Please try again.\n");
                     break;
                 }
             }
@@ -69,7 +180,8 @@ void listFiles(const MemoList *memo) {
 }
 
 void displayFiles(const MemoList *memo) {
-    Lcd_Draw_Back_Color(BLACK);
+    // Lcd_Draw_Back_Color(BLACK);
+    Lcd_Clr_Screen();
 
     unsigned int i;
     for (i = 0; i < memo->file_cnt; ++i) {

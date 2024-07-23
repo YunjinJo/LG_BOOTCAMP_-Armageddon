@@ -5,9 +5,10 @@ void addFile(MemoList *memo, const char *filename, const char *content) {
         strncpy(memo->files[memo->file_cnt].filename, filename, MAX_FILENAME_LENGTH);
         strncpy(memo->files[memo->file_cnt].content, content, MAX_CONTENT_LENGTH);
         memo->file_cnt++;
-        writeFile(memo, memo->file_cnt-1, 1);
+        writeFile(memo, memo->file_cnt-1, ADD);
     } else {
-        Uart_Printf("Maximum file limit reached.\n");
+        // Uart_Printf("Maximum file limit reached.\n");
+        Lcd_Printf(0, 560, WHITE, BLACK, 2, 2, "Maximum file limit reached.");
     }
 }
 
@@ -20,11 +21,12 @@ void deleteFile(MemoList *memo, const char *filename) {
                 memo->files[j] = memo->files[j + 1];
             }
             memo->file_cnt--;
-            Uart_Printf("File %s deleted.\n", filename);
+            // Uart_Printf("File %s deleted.\n", filename);
             return;
         }
     }
-    Uart_Printf("File not found.\n");
+    // Uart_Printf("File not found.\n");
+    // Lcd_Printf(0, 560, WHITE, BLACK, 2, 2, "File not found.");
 }
 
 void printLines(char * content) 
@@ -46,7 +48,7 @@ void printLines(char * content)
     }
 }
 
-void writeFile(MemoList * memo, int index, int caller)
+void writeFile(MemoList * memo, int index, ECommand command)
 {
     char new_content[MAX_CONTENT_LENGTH];
     
@@ -67,10 +69,14 @@ void writeFile(MemoList * memo, int index, int caller)
     char x;
     while (1) {
         x = Uart1_Get_Char();
-        Uart_Printf("input char : %c\n", x);
+        // Uart_Printf("input char : %c\n", x);
         
-        if (x == '\b') { // Backspace key
-            Uart_Printf("backspace entered\n");
+        if (x == '\x1B') {
+            if (command == ADD)
+                deleteFile(memo, memo->files[index].filename);
+            return;
+        } else if (x == '\b') { // Backspace key
+            // Uart_Printf("backspace entered\n");
             size_t len = strlen(new_content);
             if (len > 0) {
                 new_content[len - 1] = '\0'; // Remove the last character
@@ -95,7 +101,7 @@ void writeFile(MemoList * memo, int index, int caller)
             Lcd_Printf(20, 560, WHITE, BLACK, 2, 2, "Click other to return to edit mode");
             x = Uart1_Get_Char();
             if (x == 'q') {
-                if (caller == 1) {
+                if (command == ADD) {
                     deleteFile(memo, memo->files[index].filename);
                 }
                 return;
@@ -129,7 +135,7 @@ void writeFile(MemoList * memo, int index, int caller)
     // Save modified content back to memo->files[i].content
     strncpy(memo->files[index].content, new_content, MAX_CONTENT_LENGTH - 1);
     memo->files[index].content[MAX_CONTENT_LENGTH - 1] = '\0'; // Ensure null-termination
-    Uart_Printf("Content has been modified.\n");
+    // Uart_Printf("Content has been modified.\n");
 
     // Update the LCD with the new content
     Lcd_Clr_Screen();
@@ -148,11 +154,12 @@ void readFile(MemoList *memo, const char *filename) {
     for (i = 0; i < memo->file_cnt; ++i) {
         if (strcmp(memo->files[i].filename, filename) == 0) {
             Lcd_Clr_Screen();
+            Lcd_Printf(100, 100, WHITE, BLACK, 2, 2, "<%s>", memo->files[i].filename);
             printLines(memo->files[i].content);
             // Lcd_Printf(850, 550, WHITE, BLACK, 1, 1, "0. Back");
             // Lcd_Printf(850, 570, WHITE, BLACK, 1, 1, "1. Modify");
-            Lcd_Printf(680, 520, WHITE, BLACK, 2, 2, "0. Back");
-            Lcd_Printf(680, 560, WHITE, BLACK, 2, 2, "1. Modify");
+            Lcd_Printf(780, 520, WHITE, BLACK, 2, 2, "0. Back");
+            Lcd_Printf(780, 560, WHITE, BLACK, 2, 2, "1. Modify");
             while (1) {
                 command = Uart1_Get_Char();
                 switch (command)
@@ -160,16 +167,17 @@ void readFile(MemoList *memo, const char *filename) {
                 case '0':
                     return;
                 case '1':
-                    writeFile(memo, i, 2);    
+                    writeFile(memo, i, READ);    
                     return;
                 default:
-                    Uart_Printf("Invalid choice. Please try again.\n");
+                    // Uart_Printf("Invalid choice. Please try again.\n");
                     break;
                 }
             }
         }
     }
-    Uart_Printf("File not found.\n");
+    // Uart_Printf("File not found.\n");
+    // Lcd_Printf(0, 560, WHITE, BLACK, 2, 2, "File not found.");
 }
 
 void listFiles(const MemoList *memo) {
@@ -191,4 +199,62 @@ void displayFiles(const MemoList *memo) {
 
 void printFileCnt(const MemoList *memo) {
     Uart_Printf("File Count: %d\n", memo->file_cnt);
+}
+
+void writeFilename(MemoList* memo, char * filename, ECommand e_command) {
+	char *command;
+	switch (e_command)
+	{
+	case ADD:
+		command = "add";
+		break;
+	case READ:
+		command = "read";
+		break;
+	case DELETE:
+		command = "delete";
+		break;
+	
+	default:
+		break;
+	}
+	// Lcd_Clr_Screen();
+	displayFiles(memo);
+	// Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Enter filename to %s: ", command);
+	Lcd_Printf(0, 560, WHITE, BLACK, 2, 2, "Enter filename to %s: ", command);
+	char x;
+	while (1) {
+        x = Uart1_Get_Char();
+        // Uart_Printf("input char : %c\n", x);
+        
+        if (x == '\x1B') {
+            return;
+        } else if (x == '\b') { // Backspace key
+            // Uart_Printf("backspace entered\n");
+            size_t len = strlen(filename);
+            if (len > 0) {
+                filename[len - 1] = '\0'; // Remove the last character
+				// Lcd_Clr_Screen();
+				displayFiles(memo);
+				// Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Enter filename to %s: ", command);
+				// Lcd_Printf(300, 570, WHITE, BLACK, 1, 1, "%s", filename);
+				Lcd_Printf(0, 560, WHITE, BLACK, 2, 2, "Enter filename to %s: ", command);
+				Lcd_Printf(400, 560, WHITE, BLACK, 2, 2, "%s", filename);
+            }
+        } else if (x == '\r') { 
+            return;
+        } else { // Other characters
+            size_t len = strlen(filename);
+            if (len < MAX_FILENAME_LENGTH - 1) {
+                filename[len] = x; // Add new character
+                filename[len + 1] = '\0'; // Null-terminate the string
+				// Lcd_Clr_Screen();
+				displayFiles(memo);
+				// Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Enter filename to %s: ", command);
+				// Lcd_Printf(300, 570, WHITE, BLACK, 1, 1, "%s", filename);
+				Lcd_Printf(0, 560, WHITE, BLACK, 2, 2, "Enter filename to %s: ", command);
+				Lcd_Printf(400, 560, WHITE, BLACK, 2, 2, "%s", filename);
+            }
+        }
+	}
 }

@@ -3,82 +3,21 @@
 #include <string.h>
 #include "./MemoMgr.h"
 
-typedef struct{
-	unsigned int a;
-	unsigned int b;
-	unsigned int c;
-	unsigned int d;
-	unsigned int e;
-	unsigned int f;
-}TEST_T;
+// typedef struct{
+// 	unsigned int a;
+// 	unsigned int b;
+// 	unsigned int c;
+// 	unsigned int d;
+// 	unsigned int e;
+// 	unsigned int f;
+// }TEST_T;
 
-TEST_T t1 = {0, 1, 2, 3, 4, 5};
-TEST_T t2 = {6, 7, 8, 9, 10, 11};
-TEST_T t3 = {12, 13, 14, 15, 16, 17};
+// TEST_T t1 = {0, 1, 2, 3, 4, 5};
+// TEST_T t2 = {6, 7, 8, 9, 10, 11};
+// TEST_T t3 = {12, 13, 14, 15, 16, 17};
 
-#define DELAY	8000
+// #define DELAY	8000
 
-typedef enum {
-	add = 1,
-	read,
-	delete,
-} ECommand;
-
-void writeFilename(MemoList* memo, char * filename, ECommand e_command) {
-	char *command;
-	switch (e_command)
-	{
-	case 1:
-		command = "add";
-		break;
-	case 2:
-		command = "read";
-		break;
-	case 3:
-		command = "delete";
-		break;
-	
-	default:
-		break;
-	}
-	// Lcd_Clr_Screen();
-	displayFiles(memo);
-	// Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Enter filename to %s: ", command);
-	Lcd_Printf(0, 560, WHITE, BLACK, 2, 2, "Enter filename to %s: ", command);
-	char x;
-	while (1) {
-        x = Uart1_Get_Char();
-        Uart_Printf("input char : %c\n", x);
-        
-        if (x == '\b') { // Backspace key
-            Uart_Printf("backspace entered\n");
-            size_t len = strlen(filename);
-            if (len > 0) {
-                filename[len - 1] = '\0'; // Remove the last character
-				// Lcd_Clr_Screen();
-				displayFiles(memo);
-				// Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Enter filename to %s: ", command);
-				// Lcd_Printf(300, 570, WHITE, BLACK, 1, 1, "%s", filename);
-				Lcd_Printf(0, 560, WHITE, BLACK, 2, 2, "Enter filename to %s: ", command);
-				Lcd_Printf(400, 560, WHITE, BLACK, 2, 2, "%s", filename);
-            }
-        } else if (x == '\r') { 
-            return;
-        } else { // Other characters
-            size_t len = strlen(filename);
-            if (len < MAX_FILENAME_LENGTH - 1) {
-                filename[len] = x; // Add new character
-                filename[len + 1] = '\0'; // Null-terminate the string
-				// Lcd_Clr_Screen();
-				displayFiles(memo);
-				// Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Enter filename to %s: ", command);
-				// Lcd_Printf(300, 570, WHITE, BLACK, 1, 1, "%s", filename);
-				Lcd_Printf(0, 560, WHITE, BLACK, 2, 2, "Enter filename to %s: ", command);
-				Lcd_Printf(400, 560, WHITE, BLACK, 2, 2, "%s", filename);
-            }
-        }
-	}
-}
 
 void Main(void)
 {
@@ -113,13 +52,13 @@ void Main(void)
 			Lcd_Printf(740, 520, WHITE, BLACK, 2, 2, "3. Delete File");
 			Lcd_Printf(740, 560, WHITE, BLACK, 2, 2, "4. Close App");
 
-			Uart_Printf("Enter your choice: ");
+			// Uart_Printf("Enter your choice: ");
 			
 			choice = Uart1_Get_Char();
 			ECommand command;
 			switch (choice) {
 				case '1':
-					command = add;
+					command = ADD;
 					// Uart_Printf("%d. Add File\n", choice - '1' + 1);
 					// Uart_Printf("Enter filename to add: ");
 					// Uart1_GetString(filename);
@@ -130,7 +69,7 @@ void Main(void)
 					// Uart_Printf("filename: %s\ncontent: %s\n", filename, content);
 					break;
 				case '2':
-					command = read;
+					command = READ;
 					// Uart_Printf("%d. Read File\n", choice - '1' + 1);
 					// Uart_Printf("Enter filename to read: ");
 					// Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Enter filename to read: ");
@@ -140,7 +79,7 @@ void Main(void)
 					readFile(&memo, filename);
 					break;
 				case '3':
-					command = delete;
+					command = DELETE;
 					// Uart_Printf("%d. Delete File\n", choice - '1' + 1);
 					// Uart_Printf("Enter filename to delete: ");
 					// Lcd_Printf(100, 570, WHITE, BLACK, 1, 1, "Enter filename to delete: ");	
@@ -153,7 +92,7 @@ void Main(void)
 					Toggle_Input_Flag();
 					break;
 				default:
-					Uart_Printf("Invalid choice. Please try again.\n");
+					// Uart_Printf("Invalid choice. Please try again.\n");
 					break;
 			}
 		}

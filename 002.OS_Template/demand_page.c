@@ -27,11 +27,11 @@ void set_second_descriptor(unsigned int *second_TT_addr, unsigned int PA, unsign
 unsigned int *get_original_code_addr(unsigned int virtual_addr, unsigned int asid)
 {
     virtual_addr = virtual_addr & ~0xFFF;
-    if (asid == 1) {
-        return (unsigned int *) (virtual_addr - 0x30000000 + 0x44100000);
+    if (asid == SEL_APP0) {
+        return (unsigned int *) (virtual_addr - RAM_APP + RAM_APP0);
     }
-    else if (asid == 2) {
-        return (unsigned int *) (virtual_addr - 0x30000000 + 0x44500000);
+    else if (asid == SEL_APP1) {
+        return (unsigned int *) (virtual_addr - RAM_APP + RAM_APP1);
     }
     else {
         Uart_Printf("ERROR\n");
@@ -101,10 +101,10 @@ void demand_paging(unsigned int fault_addr, unsigned int reason)
     }
 
     // 1차 T/T 주소
-    if (asid == 1) {
+    if (asid == SEL_APP0) {
         first_TT_addr = get_first_TT_addr(fault_addr, MMU_PAGE_TABLE_BASE);
     }
-    else if (asid == 2) {
+    else if (asid == SEL_APP1) {
         first_TT_addr = get_first_TT_addr(fault_addr, MMU_PAGE_TABLE_BASE_APP1);
     }
     
@@ -136,26 +136,10 @@ void demand_paging(unsigned int fault_addr, unsigned int reason)
 
 void demand_page_PABT(unsigned int fault_addr)
 {
-    // unsigned int *temp = get_first_TT_addr(fault_addr, MMU_PAGE_TABLE_BASE);
-    // unsigned int *second = get_second_TT_addr(fault_addr, *temp);
-    CoInvalidateMainTlb();
-	call_isb();
-    // Uart_Printf("\nDEMAND PAGE PABT : %X\n", fault_addr);
-    // Uart_Printf("\nDEMAND PAGE *PABT : %X\n", *temp);
-    // Uart_Printf("\nSECOND!!! PABT : %X\n", (unsigned int) second);
-    // Uart_Printf("\nSECOND!!! *PABT : %X\n", *second);
     demand_paging(fault_addr, PABT);
 }
 
 void demand_page_DABT(unsigned int fault_addr)
 {
-    // unsigned int *temp = get_first_TT_addr(fault_addr, MMU_PAGE_TABLE_BASE);
-    // unsigned int *second = get_second_TT_addr(fault_addr, *temp);
-    CoInvalidateMainTlb();
-	call_isb();
-    // Uart_Printf("\nDEMAND PAGE DABT : %X\n", fault_addr);
-    // Uart_Printf("\nDEMAND PAGE *DABT : %X\n", *temp);
-    // Uart_Printf("\nSECOND!!! DABT : %X\n", (unsigned int) second);
-    // Uart_Printf("\nSECOND!!! *DABT : %X\n", *second);
     demand_paging(fault_addr, DABT);
 }

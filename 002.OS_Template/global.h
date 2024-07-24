@@ -20,6 +20,6 @@ extern REG_INFO *notsel_reg_info;
 extern REG_INFO *reg_info_app0;
 extern REG_INFO *reg_info_app1;
 
-void pcb_init(unsigned int RAM_APP0, unsigned int STACK_BASE_APP0, unsigned int STACK_BASE_APP1);
+void pcb_init(unsigned int RAM, unsigned int ST_BASE_APP0, unsigned int ST_BASE_APP1);
 
 #endif /* GLOBAL_H_ */

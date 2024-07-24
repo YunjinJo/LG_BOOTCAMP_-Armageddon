@@ -207,7 +207,6 @@ void init_second_table_descriptor_App(unsigned int PAGE_APP)
 
 	for (next_section = 0; next_section < 4; next_section++) {
 		pTT = (unsigned int *) (PAGE_APP + (0x400 * next_section));
-		// Uart_Printf("\npTT : %X\n", (unsigned int ) pTT);
 		for (i=0; i<256; i++) {
 			*pTT++ = 0;
 		}

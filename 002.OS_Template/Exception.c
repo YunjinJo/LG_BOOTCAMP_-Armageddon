@@ -73,19 +73,12 @@ void * SVC_Handler[] = {
 	(void *) Uart1_Get_Pressed, 				//19
 	};
 
-//void SVC_Handler(unsigned int addr, unsigned int mode)
-//{
-//    Uart_Printf("SVC-Exception @[0x%X]\nMode[0x%X]\n", addr, mode);
-//    Uart_Printf("SVC-ID[%u]\n", Macro_Extract_Area(*(unsigned int *)addr, 0xffffff, 0));
-//}
-
-
-void Invalid_ISR(void);	//__attribute__ ((interrupt ("IRQ")));
-void Uart1_ISR(void);	//__attribute__ ((interrupt ("IRQ")));
-void Timer0_ISR(void); //	__attribute__ ((interrupt ("IRQ")));
-void Key3_ISR(void);		//__attribute__ ((interrupt ("IRQ")));
-void Key4_ISR(void);		//__attribute__ ((interrupt ("IRQ")));
-void SDHC_ISR(void); 	//__attribute__ ((interrupt ("IRQ")));
+void Invalid_ISR(void);
+void Uart1_ISR(void);
+void Timer0_ISR(void);
+void Key3_ISR(void);
+void Key4_ISR(void);
+void SDHC_ISR(void);
 
 void (*ISR_Vector[])(void) =
 {

@@ -44,11 +44,11 @@ void Main(void)
 			// Lcd_Printf(850, 530, WHITE, BLACK, 1, 1, "2. Read File");
 			// Lcd_Printf(850, 550, WHITE, BLACK, 1, 1, "3. Delete File");
 			// Lcd_Printf(850, 570, WHITE, BLACK, 1, 1, "4. Close App");
-			Lcd_Printf(740, 400, WHITE, BLACK, 2, 2, "<Notepad Manual>");
-			Lcd_Printf(740, 440, WHITE, BLACK, 2, 2, "1. Add File");
-			Lcd_Printf(740, 480, WHITE, BLACK, 2, 2, "2. Read File");
-			Lcd_Printf(740, 520, WHITE, BLACK, 2, 2, "3. Delete File");
-			Lcd_Printf(740, 560, WHITE, BLACK, 2, 2, "4. Close App");
+			Lcd_Printf(740, 440, WHITE, BLACK, 2, 2, "<Notepad Manual>");
+			Lcd_Printf(740, 480, WHITE, BLACK, 2, 2, "1. Add File");
+			Lcd_Printf(740, 520, WHITE, BLACK, 2, 2, "2. Read File");
+			Lcd_Printf(740, 560, WHITE, BLACK, 2, 2, "3. Delete File");
+			// Lcd_Printf(740, 560, WHITE, BLACK, 2, 2, "4. Close App");
 
 			while (!choice) {
 				choice = Uart1_Get_Pressed();
@@ -99,11 +99,11 @@ void Main(void)
 			} 
 		} else { // inputFlag == 0
 			Delay(DELAY);
-			Lcd_Printf(700, 0, YELLOW, BLACK, 2, 2, "Notepad App Waiting");
-			Lcd_Printf(700, 40, YELLOW, BLACK, 2, 2, "Press '/' to switch");
+			Lcd_Printf(700, 0, GREEN, BLACK, 2, 2, "Notepad App Waiting");
+			Lcd_Printf(700, 40, GREEN, BLACK, 2, 2, "Press '/' to switch");
 			Delay(DELAY);
-			Lcd_Printf(700, 0, BLACK, YELLOW, 2, 2, "Notepad App Waiting");
-			Lcd_Printf(700, 40, BLACK, YELLOW, 2, 2, "Press '/' to switch");
+			Lcd_Printf(700, 0, BLACK, GREEN, 2, 2, "Notepad App Waiting");
+			Lcd_Printf(700, 40, BLACK, GREEN, 2, 2, "Press '/' to switch");
 		}
 			
 

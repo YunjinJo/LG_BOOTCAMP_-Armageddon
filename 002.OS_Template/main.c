@@ -1,6 +1,7 @@
 #include "device_driver.h"
 #include "global.h"
 #include "demand_page.h"
+#include "option.h"
 
 extern WIN_INFO_ST ArrWinInfo[5];
 
@@ -12,24 +13,8 @@ extern WIN_INFO_ST ArrWinInfo[5];
 #define YELLOW	0xffe0
 #define VIOLET	0xf81f
 
-#define		RAM_APP  			0x30000000
-#define 	RAM_APP0			0x44100000
-#define 	RAM_APP1			(RAM_APP0+SIZE_APP0)
-#define 	SIZE_STACK0			(1*1024*1024)
-#define 	SIZE_STACK1			(1*1024*1024)
-#define 	STACK_LIMIT_APP0	(RAM_APP1+SIZE_APP1)
-#define 	STACK_LIMIT_APP1	(STACK_LIMIT_APP0+SIZE_STACK0)
-#define 	STACK_BASE_APP0		(STACK_LIMIT_APP0+SIZE_STACK0)
-#define 	STACK_BASE_APP1		(STACK_LIMIT_APP1+SIZE_STACK1)
-
-#define 	SIZE_APP0			(4*1024*1024)
-#define 	SIZE_APP1			(4*1024*1024)
-
 #define 	SECTOR_APP0			100
 #define 	SECTOR_APP1			5000
-
-#define SEL_APP0 1
-#define SEL_APP1 2
 
 #define SECTOR_SIZE 		512
 #define ALIGN_SECTOR(x)	 	((((x+(SECTOR_SIZE-1))&~(SECTOR_SIZE-1))/SECTOR_SIZE))
@@ -51,7 +36,7 @@ void start_app(unsigned int sel_app) {
 		case SEL_APP0:
 		{
 			CoSetASID(1);
-			CoSetTTBase((0x44000000 |(1<<6)|(1<<3)|(0<<1)|(0<<0)));
+			CoSetTTBase((MMU_PAGE_TABLE_BASE |(1<<6)|(1<<3)|(0<<1)|(0<<0)));
 			sel_reg_info = reg_info_app0;
 			sel_base_stack = STACK_BASE_APP0;
 		}
@@ -59,7 +44,7 @@ void start_app(unsigned int sel_app) {
 		case SEL_APP1:
 		{
 			CoSetASID(2);
-			CoSetTTBase((0x44080000 |(1<<6)|(1<<3)|(0<<1)|(0<<0)));
+			CoSetTTBase((MMU_PAGE_TABLE_BASE_APP1 |(1<<6)|(1<<3)|(0<<1)|(0<<0)));
 			sel_reg_info = reg_info_app1;
 			sel_base_stack = STACK_BASE_APP1;
 		}
@@ -118,7 +103,6 @@ void Main(void)
 	}
 #endif
 	pcb_init(RAM_APP, STACK_BASE_APP0, STACK_BASE_APP1);
-//	for(;;)
 	{
 		
 		// SetTransTable(RAM_APP, (RAM_APP+SIZE_APP0-1), RAM_APP0, RW_WBWA | NG_ON);
@@ -134,7 +118,6 @@ void Main(void)
 		set_second_table_address_App1(RAM_APP);
 		init_second_table_descriptor_App(SND_PAGE_TABLE_BASE_APP1);
 		
-		CoInvalidateMainTlb();
 		start_app(SEL_APP0); // SEL_APP0 or SEL_APP1
 
 	}

@@ -12,8 +12,6 @@ void Undef_Handler(unsigned int addr, unsigned int mode)
 void Dabort_Handler(unsigned int addr, unsigned int mode)
 {
 	unsigned int r, d, s, w, sd;
-	unsigned int *temp = get_first_TT_addr(addr, MMU_PAGE_TABLE_BASE);
-	unsigned int *second = get_second_TT_addr(addr, *temp);
 
 	Uart_Printf("DABT-Exception @[0x%X]\nMode[0x%X]\n", addr, mode);
 	Uart_Printf("DABT-Fault Address[0x%X]\n", DABT_Falut_Address());
@@ -25,20 +23,11 @@ void Dabort_Handler(unsigned int addr, unsigned int mode)
 	sd = Macro_Extract_Area(sd, 0x1, 12);
 	r += (s << 4);
 	Uart_Printf("Reason[0x%X]\nDomain[0x%X]\nRead(0)/Write(1)[%d]\nAXI-Decode(0)/Slave(1)[%d]\n", r, d, w, sd);
-	// Uart_Printf("\nTEST!!! *DABT : %X\n", *temp);
-	// Uart_Printf("\nSECOND!!! DABT : %X\n", (unsigned int) second);
-	// Uart_Printf("\nSECOND!!! *DABT : %X\n", *second);
-
-#if 0
-	for(;;); /* ������ ���Ͽ� ���� �ּҷ� �����ϵ��� �ڵ鷯�� ���� */
-#endif
 }
 
 void Pabort_Handler(unsigned int addr, unsigned int mode)
 {
 	unsigned int r, s, sd;
-	unsigned int *temp = get_first_TT_addr(addr, MMU_PAGE_TABLE_BASE);
-	unsigned int *second = get_second_TT_addr(addr, *temp);
 
 	Uart_Printf("PABT-Exception @[0x%X]\nMode[0x%X]\n", addr, mode);
 	Uart_Printf("PABT-Fault Address[0x%X]\n", PABT_Falut_Address());
@@ -48,8 +37,6 @@ void Pabort_Handler(unsigned int addr, unsigned int mode)
 	sd = Macro_Extract_Area(sd, 0x1, 12);
 	r += (s << 4);
 	Uart_Printf("Reason[0x%X]\nAXI-Decode(0)/Slave(1)[%d]\n", r, sd);
-	// Uart_Printf("\nTEST!!! *PABT : %X\n", *temp);
-	// Uart_Printf("\nSECOND!!! *PABT : %X\n", (unsigned int) second);
 	for(;;);
 }
 
@@ -86,19 +73,12 @@ void * SVC_Handler[] = {
 	(void *) Uart1_Get_Pressed, 				//19
 	};
 
-//void SVC_Handler(unsigned int addr, unsigned int mode)
-//{
-//    Uart_Printf("SVC-Exception @[0x%X]\nMode[0x%X]\n", addr, mode);
-//    Uart_Printf("SVC-ID[%u]\n", Macro_Extract_Area(*(unsigned int *)addr, 0xffffff, 0));
-//}
-
-
-void Invalid_ISR(void);	//__attribute__ ((interrupt ("IRQ")));
-void Uart1_ISR(void);	//__attribute__ ((interrupt ("IRQ")));
-void Timer0_ISR(void); //	__attribute__ ((interrupt ("IRQ")));
-void Key3_ISR(void);		//__attribute__ ((interrupt ("IRQ")));
-void Key4_ISR(void);		//__attribute__ ((interrupt ("IRQ")));
-void SDHC_ISR(void); 	//__attribute__ ((interrupt ("IRQ")));
+void Invalid_ISR(void);
+void Uart1_ISR(void);
+void Timer0_ISR(void);
+void Key3_ISR(void);
+void Key4_ISR(void);
+void SDHC_ISR(void);
 
 void (*ISR_Vector[])(void) =
 {

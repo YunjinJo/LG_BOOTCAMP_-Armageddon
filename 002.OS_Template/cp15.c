@@ -182,21 +182,23 @@ void SetTransTable_app1(unsigned int uVaStart, unsigned int uVaEnd, unsigned int
 
 void set_second_table_address_App0(unsigned int uVaStart)
 {
+	// 1차 T/T -> 2차 T/T 찾아갈 수 있도록 주소 지정
 	unsigned int* pTT;
 	pTT = get_first_TT_addr(uVaStart, MMU_PAGE_TABLE_BASE); // 시작 주소
-	*pTT++ = 0x44040000 | 0x1; //0x44001104
-	*pTT++ = 0x44040400 | 0x1;//0x440011080
-	*pTT++ = 0x44040800| 0x1;//0x4400110c
-	*pTT = 0x44040c00 | 0x1; //0x44001110
+	*pTT++ = (SND_PAGE_TABLE_BASE_APP0        ) | 0x1;
+	*pTT++ = (SND_PAGE_TABLE_BASE_APP0 + 0x400) | 0x1;
+	*pTT++ = (SND_PAGE_TABLE_BASE_APP0 + 0x800) | 0x1;
+	*pTT   = (SND_PAGE_TABLE_BASE_APP0 + 0xC00) | 0x1;
 }
 void set_second_table_address_App1(unsigned int uVaStart)
 {
+	// 1차 T/T -> 2차 T/T 찾아갈 수 있도록 주소 지정
 	unsigned int* pTT;
 	pTT = get_first_TT_addr(uVaStart, MMU_PAGE_TABLE_BASE_APP1); // 시작 주소
-	*pTT++ = 0x440c0000 | 0x1; //0x44081104
-	*pTT++ = 0x440c0400 | 0x1;//0x44081108
-	*pTT++ = 0x440c0800 | 0x1;//0x4408110c
-	*pTT   = 0x440c0c00 | 0x1; //0x44081110
+	*pTT++ = (SND_PAGE_TABLE_BASE_APP1        ) | 0x1;
+	*pTT++ = (SND_PAGE_TABLE_BASE_APP1 + 0x400) | 0x1;
+	*pTT++ = (SND_PAGE_TABLE_BASE_APP1 + 0x800) | 0x1;
+	*pTT   = (SND_PAGE_TABLE_BASE_APP1 + 0xC00) | 0x1;
 }
 
 void init_second_table_descriptor_App(unsigned int PAGE_APP)
@@ -207,9 +209,8 @@ void init_second_table_descriptor_App(unsigned int PAGE_APP)
 
 	for (next_section = 0; next_section < 4; next_section++) {
 		pTT = (unsigned int *) (PAGE_APP + (0x400 * next_section));
-		// Uart_Printf("\npTT : %X\n", (unsigned int ) pTT);
 		for (i=0; i<256; i++) {
-			*pTT++ = 0;
+			*pTT++ = 0; // 2차 T/T 0으로 초기화
 		}
 	}
 }

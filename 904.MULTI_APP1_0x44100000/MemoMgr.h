@@ -1,7 +1,7 @@
 #ifndef _MEMOMGR_H_
 #define _MEMOMGR_H_
 
-#include "Device_Driver.h"
+#include "device_driver.h"
 #include "./MemoList.h"
 
 typedef enum {

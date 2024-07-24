@@ -1,9 +1,8 @@
-#include "Device_Driver.h"
+#include "device_driver.h"
 #include "board_info.h"
 #include "4412_addr.h"
 
 void Main(void) {
-	Draw_Board_State();
 
 	int cur_x = 4;
 	int cur_y = 4;
@@ -11,21 +10,27 @@ void Main(void) {
 	unsigned short game_end = 0;
 	unsigned int input_flag = 0;
 	unsigned int screen_cleared = 0;
+	unsigned int duplicated = 0;
 
+	// init
 	SVC_Lcd_Draw_Back_Color(GO_BOARD);
-	SVC_Uart_Printf(
-			"===== MOVE : W/A/S/D , SET : ENTER , CHANGE APP : / =====\n\n");
+	Draw_Board_State();
+	Draw_Color_Dot(GO_BOARD_OFFSET_X + cur_x * GO_BOARD_SPACE,
+			GO_BOARD_OFFSET_Y + cur_y * GO_BOARD_SPACE, cur_color);
+
 	for (;;) {
 		input_flag = Get_Input_Flag();
 
 		if (!input_flag) {
 			if (!screen_cleared) {
 				SVC_Lcd_Clr_Screen();
+				Draw_Board_State();
+				Draw_Color_Dot(GO_BOARD_OFFSET_X + cur_x * GO_BOARD_SPACE,
+						GO_BOARD_OFFSET_Y + cur_y * GO_BOARD_SPACE, cur_color);
 				screen_cleared = 1 - screen_cleared;
+				Draw_Manual();
+
 			}
-			Draw_Board_State();
-			Draw_Red_Dot(GO_BOARD_OFFSET_X + cur_x * GO_BOARD_SPACE,
-					GO_BOARD_OFFSET_Y + cur_y * GO_BOARD_SPACE);
 
 			char arr_input = 0;
 			Get_Input(&arr_input);
@@ -47,6 +52,7 @@ void Main(void) {
 			case 'D':
 				cur_x++;
 				break;
+
 			case '/':
 				Toggle_Input_Flag();
 				input_flag = Get_Input_Flag();
@@ -54,26 +60,35 @@ void Main(void) {
 				screen_cleared = 1 - screen_cleared;
 				break;
 
+			case 'r':
+			case 'R':
+				Clean_Stones();
+				Draw_Board_State();
+				break;
 			case 13: //ENTER
-				if (Check_Validate(cur_x, cur_y))
+
+				if (Check_Validate(cur_x, cur_y)) {
 					Add_Stone((STONE) {cur_color,cur_x,cur_y});
-							else {
-								SVC_Uart_Printf("CHOOSE ANOTHER PLACE\n",input_flag);
-					break;
-				}
 
-					// 승자가 없으면 색 toggle, 있으면 game_end
-					if (Check_Win(cur_x, cur_y, cur_color) == 0) {
-						cur_color = (cur_color == BLACK) ? WHITE : BLACK;
-					} else {
-						game_end = 1-game_end;
-					}
-					break;
-					default:
-					break;
-				}
+						}
 
-				// adjust xy
+						else {
+							Draw_Invalidate_Spot();
+							duplicated = 1;
+							break;
+						}
+
+						// 승자가 없으면 색 toggle, 있으면 game_end
+							if (Check_Win(cur_x, cur_y, cur_color) == 0) {
+								cur_color = (cur_color == BLACK) ? WHITE : BLACK;
+							}
+							else game_end = 1-game_end;
+							break;
+							default:
+							break;
+						}
+
+			// adjust xy
 			cur_x = (cur_x > MAX_XY) ? MAX_XY : cur_x;
 			cur_x = (cur_x < 0) ? 0 : cur_x;
 			cur_y = (cur_y > MAX_XY) ? MAX_XY : cur_y;
@@ -86,8 +101,13 @@ void Main(void) {
 				Draw_Winner(cur_color);
 				Get_Input(&arr_input);
 				Clean_Stones();
-				SVC_Uart_Printf(
-						"===== MOVE : W/A/S/D , SET : ENTER , CHANGE APP : / =====\n\n");
+			}
+
+			if (!(arr_input == 13 && duplicated)) {
+				Draw_Board_State();
+				Draw_Color_Dot(GO_BOARD_OFFSET_X + cur_x * GO_BOARD_SPACE,
+						GO_BOARD_OFFSET_Y + cur_y * GO_BOARD_SPACE, cur_color);
+				duplicated = 0;
 			}
 		}
 

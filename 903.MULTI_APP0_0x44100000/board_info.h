@@ -11,7 +11,7 @@
 #define MAX_XY 9
 #define MAX_STONES 100
 #define ROCK_OFFSET 25
-#define WIN_LENGTH 3
+#define WIN_LENGTH 3 // 승리 기준
 
 #define BLACK 0x0000
 #define WHITE 0xffff
@@ -41,10 +41,12 @@ int Check_Validate(int x, int y);
 int Check_Win(int x, int y, unsigned int color);
 void Draw_Stone(STONE s);
 void Draw_Board_State(void);
-void Draw_Red_Dot(unsigned int x_pixel, unsigned int y_pixel);;
+void Draw_Color_Dot(unsigned int x_pixel, unsigned int y_pixel, unsigned int cur_color);;
 void Clean_Stones(void);
 void Waiting_Mode(void);
 void Draw_Winner(unsigned int cur_color);
+void Draw_Invalidate_Spot(void);
+void Draw_Manual();
 void Get_Input(char *arr_input_p);
 
 #endif // BOARD_INFO_H

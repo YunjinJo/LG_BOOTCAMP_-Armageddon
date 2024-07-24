@@ -1,8 +1,8 @@
 #include "board_info.h"
 #include "device_driver.h"
-#include ".\images\go_board_2.h"
-#include ".\images\white_rock.h"
-#include ".\images\black_rock.h"
+#include "./Images/go_board_2.h"
+#include "./Images/white_rock.h"
+#include "./Images/black_rock.h"
 
 int stone_arr_size = 0;
 STONE stone_arr[MAX_STONES];
@@ -80,9 +80,9 @@ void Draw_Stone(STONE s) {
 			GO_BOARD_OFFSET_Y + GO_BOARD_SPACE * s.y - ROCK_OFFSET, img[rock]);
 }
 
-void Draw_Red_Dot(unsigned int x_pixel, unsigned int y_pixel) {
+void Draw_Color_Dot(unsigned int x_pixel, unsigned int y_pixel, unsigned int cur_color) {
 	SVC_Lcd_Draw_Bar(x_pixel - 10, y_pixel - 10, x_pixel + 10, y_pixel + 10,
-			RED);
+			cur_color);
 }
 
 void Draw_Board_State() {
@@ -104,13 +104,28 @@ void Waiting_Mode() {
 
 void Draw_Winner(unsigned int cur_color) {
 
-	Lcd_Printf(LCD_WIDTH / 2 - 330, LCD_HEIGHT / 2 - 100, WHITE, BLACK, 2, 2,
+	Lcd_Printf(LCD_WIDTH / 2 - 320, LCD_HEIGHT / 2 - 170, WHITE, BLACK, 2, 2,
 			"WINNER : %s", cur_color == BLACK ? "BLACK" : "WHITE");
-	Lcd_Printf(LCD_WIDTH / 2 - 380, LCD_HEIGHT / 2 - 65, WHITE, BLACK, 2, 2,
+	Lcd_Printf(LCD_WIDTH / 2 - 410, LCD_HEIGHT / 2 - 138, WHITE, BLACK, 2, 2,
 			"PRESS ANYTHING TO RESTART");
-	SVC_Uart_Printf("\nGAME END! WINNER : %s\n",
-			cur_color == BLACK ? "BLACK" : "WHITE\n");
 
+}
+
+void Draw_Invalidate_Spot() {
+	Lcd_Printf(LCD_WIDTH / 2 - 320, LCD_HEIGHT / 2 - 170, WHITE, BLACK, 2, 2,
+			"DUPLICATED!");
+	Lcd_Printf(LCD_WIDTH / 2 - 410, LCD_HEIGHT / 2 - 138, WHITE, BLACK, 2, 2,
+			"CHOOSE ANOTHER PLACE");
+}
+
+void Draw_Manual() {
+
+	Lcd_Printf(740, 400 - 40, WHITE, BLACK, 2, 2, "<Omok Manual>");
+	Lcd_Printf(740, 440 - 40, WHITE, BLACK, 2, 2, "W. UP");
+	Lcd_Printf(740, 480 - 40, WHITE, BLACK, 2, 2, "A. LEFT");
+	Lcd_Printf(740, 520 - 40, WHITE, BLACK, 2, 2, "S. DOWN");
+	Lcd_Printf(740, 560 - 40, WHITE, BLACK, 2, 2, "D. RIGHT");
+	Lcd_Printf(740, 560, WHITE, BLACK, 2, 2, "R. RESET");
 }
 
 void Get_Input(char *arr_input_p) {

@@ -14,7 +14,7 @@
 
 #define PAGE_BIT_OPTION (PAGE_TYPE_SMALL | PAGE_BUFFERABLE | PAGE_CACHEABLE | PAGE_AP_FULL_ACCESS | PAGE_TEX_WRITE_BACK | PAGE_GLOBAL)
 
-PAGE_INFO_T page_info[MAX_PAGE] = {0, };
+PAGE_INFO_T page_info[MAX_PAGE] = {{0}};
 unsigned int page_cnt = 0;
 unsigned int swap_flag = 0;
 

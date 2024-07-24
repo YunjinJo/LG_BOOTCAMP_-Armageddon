@@ -2,8 +2,8 @@
 #define BOARD_INFO_H
 
 #define GO_BOARD_SPACE 60
-#define GO_BOARD_OFFSET_X 27+(LCD_WIDTH-GO_BOARD_SIZE)/2
-#define GO_BOARD_OFFSET_Y 27+(LCD_HEIGHT-GO_BOARD_SIZE)/2
+#define GO_BOARD_OFFSET_X 27
+#define GO_BOARD_OFFSET_Y 27
 #define DELAY 8000
 #define LCD_WIDTH 1024
 #define LCD_HEIGHT 600
@@ -29,12 +29,6 @@ typedef struct {
     unsigned int y;
 } STONE;
 
-typedef struct {
-    STONE *stones; // 동적 배열
-    unsigned int size; // 현재 요소 개수
-    unsigned int capacity; // 배열의 총 용량
-} STONE_ARRAY;
-
 extern int stone_arr_size;
 extern STONE stone_arr[100];
 extern unsigned short stone_arr_bool[100];
@@ -50,5 +44,7 @@ void Draw_Board_State(void);
 void Draw_Red_Dot(unsigned int x_pixel, unsigned int y_pixel);;
 void Clean_Stones(void);
 void Waiting_Mode(void);
+void Draw_Winner(unsigned int cur_color);
+void Get_Input(char *arr_input_p);
 
 #endif // BOARD_INFO_H

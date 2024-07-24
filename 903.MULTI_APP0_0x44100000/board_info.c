@@ -1,17 +1,14 @@
 #include "board_info.h"
 #include "device_driver.h"
-#include ".\images\airplane.h"
 #include ".\images\go_board_2.h"
 #include ".\images\white_rock.h"
 #include ".\images\black_rock.h"
 
-// 전역 변수 정의
 int stone_arr_size = 0;
 STONE stone_arr[MAX_STONES];
 unsigned short stone_arr_bool[MAX_STONES];
 
-const unsigned short *img[] = { airplane, go_board_2, white_rock, black_rock };
-//const unsigned int arr_key[] = { 72, 80, 75, 77 };
+const unsigned short *img[] = { go_board_2, white_rock, black_rock };
 
 void Add_Stone(STONE stone) {
 	stone_arr[stone_arr_size++] = stone;
@@ -77,10 +74,10 @@ int Check_Win(int x, int y, unsigned int color) {
 }
 
 void Draw_Stone(STONE s) {
-	unsigned short rock = (s.color == BLACK) ? 3 : 2;
+	unsigned short rock = (s.color == BLACK) ? 2 : 1;
 
 	SVC_Lcd_Draw_BMP(GO_BOARD_OFFSET_X + GO_BOARD_SPACE * s.x - ROCK_OFFSET,
-	GO_BOARD_OFFSET_Y + GO_BOARD_SPACE * s.y - ROCK_OFFSET, img[rock]);
+			GO_BOARD_OFFSET_Y + GO_BOARD_SPACE * s.y - ROCK_OFFSET, img[rock]);
 }
 
 void Draw_Red_Dot(unsigned int x_pixel, unsigned int y_pixel) {
@@ -89,10 +86,7 @@ void Draw_Red_Dot(unsigned int x_pixel, unsigned int y_pixel) {
 }
 
 void Draw_Board_State() {
-	//SVC_Lcd_Clr_Screen();
-	//SVC_Lcd_Draw_Back_Color(GO_BOARD);
-	SVC_Lcd_Draw_BMP((LCD_WIDTH - GO_BOARD_SIZE) / 2,
-			(LCD_HEIGHT - GO_BOARD_SIZE) / 2, img[1]);
+	SVC_Lcd_Draw_BMP(0, 0 / 2, img[0]);
 	int i = 0;
 	for (i = 0; i < stone_arr_size; i++) {
 		Draw_Stone(stone_arr[i]);
@@ -100,9 +94,30 @@ void Draw_Board_State() {
 }
 
 void Waiting_Mode() {
-	unsigned int height = 50;
-	Lcd_Printf(LCD_WIDTH / 2 + 200, height, WHITE, BLACK, 2, 2, "OMOK WAITING");
 	Delay(DELAY);
-	Lcd_Printf(LCD_WIDTH / 2 + 200, height, BLACK, WHITE, 2, 2, "OMOK WAITING");
+	Lcd_Printf(700, 0, YELLOW, BLACK, 2, 2, "Omok App Waiting");
+	Lcd_Printf(700, 40, YELLOW, BLACK, 2, 2, "Press '/' to switch");
 	Delay(DELAY);
+	Lcd_Printf(700, 0, BLACK, YELLOW, 2, 2, "Omok App Waiting");
+	Lcd_Printf(700, 40, BLACK, YELLOW, 2, 2, "Press '/' to switch");
 }
+
+void Draw_Winner(unsigned int cur_color) {
+
+	Lcd_Printf(LCD_WIDTH / 2 - 330, LCD_HEIGHT / 2 - 100, WHITE, BLACK, 2, 2,
+			"WINNER : %s", cur_color == BLACK ? "BLACK" : "WHITE");
+	Lcd_Printf(LCD_WIDTH / 2 - 380, LCD_HEIGHT / 2 - 65, WHITE, BLACK, 2, 2,
+			"PRESS ANYTHING TO RESTART");
+	SVC_Uart_Printf("\nGAME END! WINNER : %s\n",
+			cur_color == BLACK ? "BLACK" : "WHITE\n");
+
+}
+
+void Get_Input(char *arr_input_p) {
+	char val = 0;
+	while (!val) {
+		val = SVC_Uart1_Get_Pressed();
+	}
+	*arr_input_p = val;
+}
+

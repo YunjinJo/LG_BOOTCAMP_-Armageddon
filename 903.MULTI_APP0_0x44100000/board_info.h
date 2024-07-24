@@ -11,7 +11,7 @@
 #define MAX_XY 9
 #define MAX_STONES 100
 #define ROCK_OFFSET 25
-#define WIN_LENGTH 3 // 승리 기준
+#define WIN_LENGTH 5 // 승리 기준
 
 #define BLACK 0x0000
 #define WHITE 0xffff

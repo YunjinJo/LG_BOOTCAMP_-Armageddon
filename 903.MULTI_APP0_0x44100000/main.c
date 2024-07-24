@@ -56,7 +56,6 @@ void Main(void) {
 			case '/':
 				Toggle_Input_Flag();
 				input_flag = Get_Input_Flag();
-				SVC_Uart_Printf("=====INPUT FLAG is %d\n", input_flag);
 				screen_cleared = 1 - screen_cleared;
 				break;
 
@@ -111,8 +110,7 @@ void Main(void) {
 			}
 		}
 
-		else
-			// inputFlag == 1
+		else // inputFlag == 1
 			Waiting_Mode();
 	}
 

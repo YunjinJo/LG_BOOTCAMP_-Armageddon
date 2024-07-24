@@ -135,7 +135,7 @@ void Main(void)
 		init_second_table_descriptor_App(SND_PAGE_TABLE_BASE_APP1);
 		
 		CoInvalidateMainTlb();
-		start_app(SEL_APP0) // SEL_APP0 or SEL_APP1
+		start_app(SEL_APP0); // SEL_APP0 or SEL_APP1
 
 	}
 }

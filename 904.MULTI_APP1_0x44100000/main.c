@@ -24,8 +24,6 @@ void Main(void)
 	Uart_Printf(">>APP1 => UART Print, RO-BASE = 0x44100000 \n");
 
 	MemoList memo = { .file_cnt = 0 };
-    
-	unsigned int inputFlag = 0;
 
 	for(;;)
 	{

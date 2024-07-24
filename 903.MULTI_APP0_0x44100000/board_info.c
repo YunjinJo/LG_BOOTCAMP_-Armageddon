@@ -1,9 +1,9 @@
 #include "board_info.h"
 #include "device_driver.h"
-#include ".\images\airplane.h"
-#include ".\images\go_board_2.h"
-#include ".\images\white_rock.h"
-#include ".\images\black_rock.h"
+#include "./Images/airplane.h"
+#include "./Images/go_board_2.h"
+#include "./Images/white_rock.h"
+#include "./Images/black_rock.h"
 
 // 전역 변수 정의
 int stone_arr_size = 0;

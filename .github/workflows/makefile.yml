@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build_kernel:
 
     runs-on: ubuntu-latest
     env:
@@ -31,7 +31,62 @@ jobs:
       run: make all
       working-directory: ${{ env.working-directory }}
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v1
       with:
-        name: build_file
+        name: build_output
         path: ./002.OS_Template/dram_0x40000000.bin
+
+  build_app0:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./903.MULTI_APP0_0x44100000
+
+    steps:
+    - uses: actions/checkout@main
+
+    - name: Install Arm GNU Toolchain (arm-none-eabi-gcc)
+      uses: carlosperate/arm-none-eabi-gcc-action@v1
+      with:
+        release: '4.8-2013-q4' # <-- The compiler release to use
+
+    - run: |
+            export C_INCLUDE_PATH=/home/runner/gcc-arm-none-eabi-4_8-2013q4/lib/gcc/arm-none-eabi/4.8.1/include | 
+            export CPLUS_INCLUDE_PATH=/home/runner/gcc-arm-none-eabi-4_8-2013q4/lib/gcc/arm-none-eabi/4.8.1/include |
+            export LIBRARY_PATH=/home/runner/gcc-arm-none-eabi-4_8-2013q4/lib/gcc/arm-none-eabi/4.8.1 |
+            mkdir output
+
+    - name: build start
+      run: make all
+      working-directory: ${{ env.working-directory }}
+      
+    - uses: actions/upload-artifact@v2
+      with:
+        name: build_output
+        path: ./903.MULTI_APP0_0x44100000/multi_app0_0x44100000.bin
+      
+  build_app1:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./904.MULTI_APP1_0x44100000
+
+    steps:
+    - uses: actions/checkout@main
+
+    - name: Install Arm GNU Toolchain (arm-none-eabi-gcc)
+      uses: carlosperate/arm-none-eabi-gcc-action@v1
+      with:
+        release: '4.8-2013-q4' # <-- The compiler release to use
+
+    - run: |
+            export C_INCLUDE_PATH=/home/runner/gcc-arm-none-eabi-4_8-2013q4/lib/gcc/arm-none-eabi/4.8.1/include | 
+            export CPLUS_INCLUDE_PATH=/home/runner/gcc-arm-none-eabi-4_8-2013q4/lib/gcc/arm-none-eabi/4.8.1/include |
+            export LIBRARY_PATH=/home/runner/gcc-arm-none-eabi-4_8-2013q4/lib/gcc/arm-none-eabi/4.8.1 |
+            mkdir output
+
+    - name: build start
+      run: make all
+      working-directory: ${{ env.working-directory }}
+    - uses: actions/upload-artifact@v3
+      with:
+        name: build_output
+        path: ./904.MULTI_APP1_0x44100000/multi_app1_0x44100000.bin

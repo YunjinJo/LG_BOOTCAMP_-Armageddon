@@ -32,9 +32,9 @@ void Main(void)
 		{
 			displayFiles(&memo);
 			Lcd_Printf(740, 440, WHITE, BLACK, 2, 2, "<Notepad Manual>");
-			Lcd_Printf(740, 480, WHITE, BLACK, 2, 2, "1. Add File");
-			Lcd_Printf(740, 520, WHITE, BLACK, 2, 2, "2. Read File");
-			Lcd_Printf(740, 560, WHITE, BLACK, 2, 2, "3. Delete File");
+			Lcd_Printf(740, 480, WHITE, BLACK, 2, 2, "1. Add Note");
+			Lcd_Printf(740, 520, WHITE, BLACK, 2, 2, "2. Read Note");
+			Lcd_Printf(740, 560, WHITE, BLACK, 2, 2, "3. Delete Note");
 
 			while (!choice)
 			{

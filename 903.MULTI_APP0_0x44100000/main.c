@@ -111,13 +111,7 @@ void Main(void) {
 		}
 
 		else // inputFlag == 1
-			//Waiting_Mode();
-			Delay(DELAY);
-			Lcd_Printf(700, 0, YELLOW, BLACK, 2, 2, "Omok App Waiting");
-			Lcd_Printf(700, 40, YELLOW, BLACK, 2, 2, "Press '/' to switch");
-			Delay(DELAY);
-			Lcd_Printf(700, 0, BLACK, YELLOW, 2, 2, "Omok App Waiting");
-			Lcd_Printf(700, 40, BLACK, YELLOW, 2, 2, "Press '/' to switch");
+			Waiting_Mode();
 	}
 
 }

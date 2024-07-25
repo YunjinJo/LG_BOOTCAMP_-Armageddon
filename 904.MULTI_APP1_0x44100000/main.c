@@ -26,7 +26,7 @@ void Main(void)
 		char choice = 0;
 		inputFlag = Get_Input_Flag();
 		char filename[MAX_FILENAME_LENGTH];
-		filename[0] = '\0';
+
 
 		if (inputFlag)
 		{
@@ -46,16 +46,19 @@ void Main(void)
 			{
 			case '1':
 				command = ADD;
+				filename[0] = '\0';
 				writeFilename(&memo, filename, command);
 				addFile(&memo, filename, "");
 				break;
 			case '2':
 				command = READ;
+				filename[0] = '\0';
 				writeFilename(&memo, filename, command);
 				readFile(&memo, filename);
 				break;
 			case '3':
 				command = DELETE;
+				filename[0] = '\0';
 				writeFilename(&memo, filename, command);
 				deleteFile(&memo, filename);
 				break;

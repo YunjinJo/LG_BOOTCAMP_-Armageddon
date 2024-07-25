@@ -18,12 +18,6 @@ PAGE_INFO_T page_info[MAX_PAGE] = {{0}};
 unsigned int page_cnt = 0;
 unsigned int swap_flag = 0;
 
-void set_second_descriptor(unsigned int *second_TT_addr, unsigned int PA, unsigned int option)
-{
-    unsigned int new_PA = bit_clear(PA, 12);
-    *second_TT_addr = new_PA | option;
-}
-
 unsigned int *get_original_code_addr(unsigned int virtual_addr, unsigned int asid)
 {
     virtual_addr = virtual_addr & ~0xFFF;
@@ -37,14 +31,6 @@ unsigned int *get_original_code_addr(unsigned int virtual_addr, unsigned int asi
         Uart_Printf("ERROR\n");
         return (unsigned int *) virtual_addr;
     }
-}
-
-// Physical Address
-unsigned int *get_PA(unsigned int virtual_addr, unsigned int second_descriptor)
-{
-    unsigned int small_page_base = bit_clear(second_descriptor, 12);
-    unsigned int page_index = virtual_addr & (0xfff); // 하위 12bit 만 살림
-    return (unsigned int *) small_page_base + page_index;
 }
 
 // 2차 TT Entry 주소
